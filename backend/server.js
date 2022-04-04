@@ -10,8 +10,15 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
+// routes
+const authRoutes = require('./routes/auth')
+app.use('/api/auth', authRoutes)
+
 const server = http.createServer(app)
 
-server.listen(PORT, () => {
-    console.log('Server is listening on port: ' + PORT)
-})
+mongoose.connect(process.env.MONGO_URI)
+.then(() => {
+    server.listen(PORT, () => {
+        console.log('Server is listening on port: ' + PORT)
+    })
+}).catch(err => console.error('Database connection failed. Server not started.', err))
