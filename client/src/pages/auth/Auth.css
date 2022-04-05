@@ -1,0 +1,12 @@
+.inputFormFields .inputWrapper {
+    margin-bottom: var(--spacing);
+}
+
+.loginFooter p {
+    color: var(--dark);
+}
+
+.loginFooter {
+    display: flex;
+    justify-content: space-between;
+}

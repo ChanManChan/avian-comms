@@ -1,0 +1,21 @@
+.inputWrapper {
+    width: 100%;
+}
+
+.inputWrapper label {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.inputWrapper input {
+    border-radius: var(--borderRadius);
+    margin-top: 8px;
+    background-color: white;
+    padding: 10px;
+    width: 100%;
+    font-size: 18px;
+}
+
+.inputWrapper input:focus {
+    background-color: var(--primaryBackground);
+}

@@ -1,0 +1,47 @@
+.genericButton {
+    position: relative;
+    padding: var(--spacing);
+    border-radius: var(--borderRadius);
+    color: var(--light);
+    font-size: 16px;
+    font-weight: 600;
+    background-color: var(--primary);
+    transition: background-color 0.2s ease-out;
+    box-shadow: 1px 1px 1px var(--dark);
+}
+
+.genericButton:hover {
+    background-color: var(--primaryDark);
+}
+
+.genericButton:disabled {
+    background-color: var(--grey);
+    cursor: unset;
+}
+
+.genericButton:disabled:hover:after {
+    content: attr(data-disabledtext);
+    padding: 5px;
+    border-radius: 2px;
+    background-color: var(--grey);
+    color: var(--light);
+    font-size: 12px;
+    font-weight: 300;
+    position: absolute;
+    bottom: 113%;
+    left: -40%;
+    white-space: pre;
+    display: inline-block;
+    text-align: initial;
+}
+
+.genericButton:disabled:hover:before {
+    content: "";
+    position: absolute;
+    top: -12%;
+    left: 50%;
+    margin-left: -8px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--grey) transparent transparent transparent;
+}
