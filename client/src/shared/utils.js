@@ -19,5 +19,13 @@ export const validateLoginForm = (email, password) => {
     return isMailValid && isPasswordValid
 }
 
+export const validateRegisterForm = (email, password, username) => {
+    const isMailValid = validateMail(email)
+    const isPasswordValid = validatePassword(password)
+    const isUsernameValid = validateUsername(username)
+    return isMailValid && isPasswordValid && isUsernameValid
+}
+
 const validateMail = email => /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)
 const validatePassword = ({ length }) => length >= 6 && length <= 12
+const validateUsername = ({ length }) => length >= 3 && length <= 12

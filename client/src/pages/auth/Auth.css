@@ -6,7 +6,8 @@
     color: var(--dark);
 }
 
-.loginFooter {
+.loginFooter,
+.registerFooter {
     display: flex;
     justify-content: space-between;
 }
