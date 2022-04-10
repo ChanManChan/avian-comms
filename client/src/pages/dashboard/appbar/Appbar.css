@@ -1,0 +1,4 @@
+.dashboardContainer .chatContainer .appbarContainer {
+    height: 48px;
+    background-color: var(--lightGrey);
+}

@@ -38,6 +38,8 @@ body {
   --dark: #424242;
   --spacing: 15px;
   --borderRadius: 4px;
+  --buttonBoxShadow: 1px 1px 3px var(--dark);
+  --wrapperBoxShadow: 5px 5px 1px var(--dark);
 }
 
 input,

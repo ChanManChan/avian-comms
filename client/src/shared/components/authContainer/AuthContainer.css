@@ -32,5 +32,5 @@
     border-radius: var(--borderRadius);
     padding: var(--spacing);
     background-color: var(--lightGrey);
-    box-shadow: 5px 5px 1px var(--dark);
+    box-shadow: var(--wrapperBoxShadow);
 }

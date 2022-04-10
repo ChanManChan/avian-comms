@@ -1,0 +1,22 @@
+.dashboardContainer .groupSidebarContainer {
+    flex-basis: 72px;
+    height: 100%;
+    background-color: var(--primary);
+}
+
+.groupSidebarContainer .sidebarButton {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--borderRadius);
+    background-color: var(--light);
+    color: var(--dark);
+    display: block;
+    margin: var(--spacing) auto 0;
+    box-shadow: var(--buttonBoxShadow);
+    transition: all 0.2s ease-out;
+}
+
+.groupSidebarContainer .sidebarButton:active {
+    box-shadow: 0px 0px 0px var(--dark);
+    transform: scale(0.98);
+}

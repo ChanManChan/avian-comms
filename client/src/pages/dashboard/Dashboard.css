@@ -1,0 +1,9 @@
+.dashboardContainer {
+    display: flex;
+    height: 100%;
+}
+
+.dashboardContainer .chatContainer {
+    flex: 1;
+    background-color: white;
+}

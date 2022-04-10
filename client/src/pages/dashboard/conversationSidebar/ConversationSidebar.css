@@ -1,0 +1,29 @@
+.dashboardContainer .conversationSidebarContainer {
+    flex-basis: 224px;
+    height: 100%;
+    background-color: var(--primaryLight);
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboardContainer .conversationSidebarContainer .genericButton {
+    display: block;
+    width: 90%;
+    margin: var(--spacing) auto;
+}
+
+.conversationSidebarContainer .userList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.conversationSidebarContainer .userList .sectionTitle {
+    font-weight: 400;
+    color: var(--light);
+}
+
+.conversationSidebarContainer .userList section {
+    flex: 1;
+}
