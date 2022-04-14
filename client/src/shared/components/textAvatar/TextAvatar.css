@@ -1,0 +1,12 @@
+.textAvatarWrapper {
+    height: 42px;
+    width: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--light);
+    color: var(--primaryLight);
+    text-transform: capitalize;
+    font-weight: 700;
+}

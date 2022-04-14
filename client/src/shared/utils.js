@@ -26,9 +26,9 @@ export const validateRegisterForm = (email, password, username) => {
     return isMailValid && isPasswordValid && isUsernameValid
 }
 
-const validateMail = email => /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)
-const validatePassword = ({ length }) => length >= 6 && length <= 12
-const validateUsername = ({ length }) => length >= 3 && length <= 12
+export const validateMail = email => /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)
+export const validatePassword = ({ length }) => length >= 6 && length <= 12
+export const validateUsername = ({ length }) => length >= 3 && length <= 12
 
 export const logout = () => {
     localStorage.clear()

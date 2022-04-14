@@ -6,7 +6,7 @@
     flex-direction: column;
 }
 
-.dashboardContainer .conversationSidebarContainer .genericButton {
+.dashboardContainer .conversationSidebarContainer .genericButton:first-child {
     display: block;
     width: 90%;
     margin: var(--spacing) auto;

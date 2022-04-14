@@ -1,0 +1,8 @@
+.sendInvitationContainer .inputWrapper {
+    margin-bottom: var(--spacing);
+}
+
+.sendInvitationContainer .genericButton {
+    display: block;
+    margin-left: auto;
+}
