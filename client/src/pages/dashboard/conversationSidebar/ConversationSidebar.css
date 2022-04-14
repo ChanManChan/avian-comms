@@ -1,5 +1,5 @@
 .dashboardContainer .conversationSidebarContainer {
-    flex-basis: 224px;
+    width: 224px;
     height: 100%;
     background-color: var(--primaryLight);
     display: flex;

@@ -1,0 +1,20 @@
+.invitationListContainer {
+    width: 100%;
+}
+
+.invitationListContainer .flatButton {
+    width: 100%;
+    pointer-events: none;
+}
+
+.invitationListContainer .flatButton .singleActionButton {
+    pointer-events: all;
+    padding: 6px;
+    border-radius: var(--borderRadius);
+    background-color: var(--lightGrey);
+    color: var(--dark);
+}
+
+.invitationListContainer .flatButton .singleActionButton:nth-child(2) {
+    margin-left: 10px;
+}

@@ -9,7 +9,7 @@
     align-items: center;
 }
 
-.flatButton span:first-child {
+.flatButton > span:first-child {
     margin-right: var(--spacing);
 }
 
@@ -32,4 +32,15 @@
 .flatButton:hover::after {
     opacity: 1;
     transform: skew(-20deg) translateX(-20%) scaleX(400%);
+}
+
+.flatButton .additionalOperations {
+    margin-left: auto;
+}
+
+.flatButton .btnText {
+    pointer-events: all;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }

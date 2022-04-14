@@ -2,11 +2,12 @@ import React from 'react'
 
 import './FlatButton.css'
 
-const FlatButton = ({ text, onClick, disabled, secondary = false, children }) => {
+const FlatButton = ({ text, onClick, disabled, secondary = false, children = [] }) => {
     return (
         <button className={`flatButton${secondary ? ' secondary' : ''}`} onClick={onClick} disabled={disabled}>
-            {children && <span>{children}</span>}
-            <span>{text}</span>
+            {!Array.isArray(children) ? <span>{children}</span> : <span>{children[0]}</span>}
+            <span title={text} className='btnText'>{text}</span>
+            {children[1] && <div className='additionalOperations'>{children[1]}</div>}
         </button>
     )
 }

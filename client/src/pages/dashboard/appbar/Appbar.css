@@ -2,3 +2,8 @@
     height: 48px;
     background-color: var(--lightGrey);
 }
+
+.appbarContainer .logoutBtn {
+  padding: 10px;
+  font-size: 14px;
+}

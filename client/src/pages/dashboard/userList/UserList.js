@@ -8,7 +8,7 @@ const UserList = () => {
     const DUMMY_FRIENDS = [
         {
             id: 1,
-            username: 'nanda Gopal',
+            username: 'nanda Gopal bomb in the house henry tyson',
             isOnline: true
         },
         {
@@ -27,7 +27,7 @@ const UserList = () => {
         <section className='userListContainer'>
             {DUMMY_FRIENDS.map(({ id, username, isOnline }) => (
                 <FlatButton key={id} text={username}>
-                    <TextAvatar text={username}/>
+                    <TextAvatar text={username} secondary={isOnline}/>
                 </FlatButton>
             ))}
         </section>

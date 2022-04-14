@@ -4,6 +4,7 @@ import Button from '../../../shared/components/button/Button'
 import Modal from '../../../shared/components/modal/Modal'
 import SendInvitationForm from '../sendInvitation/SendInvitationForm'
 import UserList from '../userList/UserList'
+import InvitationList from '../invitationList/InvitationList'
 import './ConversationSidebar.css'
 
 const ConversationSidebar = () => {
@@ -20,7 +21,7 @@ const ConversationSidebar = () => {
                 <p className='sectionTitle'>PRIVATE MESSAGES</p>
                 <UserList />
                 <p className='sectionTitle'>INVITATIONS</p>
-                <section></section>
+                <InvitationList />
             </main>
             <Modal open={open} onClose={handleCloseDialog}>
                 <SendInvitationForm open={open} />
