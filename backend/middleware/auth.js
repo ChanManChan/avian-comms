@@ -17,4 +17,24 @@ const verifyToken = (req, res, next) => {
    return next()
 }
 
-module.exports = verifyToken
+const verifySocketToken = (socket, next) => {
+    const token = socket.handshake.auth?.token
+
+    if (!token) {
+        return next(new Error('Token is required for authentication'))
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        socket.user = decoded
+    } catch (error) {
+        return next(new Error('Invalid Token'))
+    }
+
+    next()
+}
+
+module.exports = {
+    verifyToken,
+    verifySocketToken
+}

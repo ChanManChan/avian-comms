@@ -4,7 +4,7 @@ const Joi = require('joi')
 const validator = require('express-joi-validation').createValidator({})
 
 const { controllers } = require('../controllers/auth')
-const verifyToken = require('../middleware/auth')
+const { verifyToken } = require('../middleware/auth')
 
 const registerSchema = Joi.object({
     username: Joi.string().min(3).max(12).required(),

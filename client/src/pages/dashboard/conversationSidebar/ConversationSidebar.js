@@ -24,7 +24,7 @@ const ConversationSidebar = () => {
                 <InvitationList />
             </main>
             <Modal open={open} onClose={handleCloseDialog}>
-                <SendInvitationForm open={open} />
+                <SendInvitationForm open={open} onClose={handleCloseDialog} />
             </Modal>
         </aside>
     )

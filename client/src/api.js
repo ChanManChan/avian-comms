@@ -24,6 +24,14 @@ export const register = async data => {
     return await apiClient.post('/auth/register', data).catch(e => ({ error: true, exception: e }))
 }
 
+// secure routes
+export const sendInvitation = async data => {
+    return await apiClient.post('/users/invite', data).catch(e => {
+        checkResponseCode(e)
+        return { error: true, exception: e }
+    })
+}
+
 const checkResponseCode = exception => {
     const responseCode = exception.response.status
     if (responseCode && (responseCode === 401 || responseCode === 403)) {

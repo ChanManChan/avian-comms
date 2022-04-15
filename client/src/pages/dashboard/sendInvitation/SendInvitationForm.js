@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
+import { connect } from 'react-redux'
 
 import { validateMail } from '../../../shared/utils'
 import Input from '../../../shared/components/input/Input'
 import Button from '../../../shared/components/button/Button'
+import { getActions } from '../../../store/actions/users'
 import './SendInvitationForm.css'
 
-const SendInvitationForm = ({ open = false }) => {
+const SendInvitationForm = ({ open = false, onClose, sendInvitation }) => {
     const [mail, setMail] = useState('')
     const [isFormValid, setIsFormValid] = useState(false)
 
@@ -19,7 +21,7 @@ const SendInvitationForm = ({ open = false }) => {
     }, [mail, open])
 
     const handleSendInvitation = () => {
-        console.log(mail)
+        sendInvitation({ targetMailAddress: mail }, onClose)
     }
 
     return (
@@ -30,4 +32,6 @@ const SendInvitationForm = ({ open = false }) => {
     )
 }
 
-export default SendInvitationForm
+const mapActionsToProps = dispatch => ({ ...getActions(dispatch) })
+
+export default connect(null, mapActionsToProps)(SendInvitationForm)
