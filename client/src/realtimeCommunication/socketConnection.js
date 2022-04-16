@@ -1,7 +1,7 @@
 import io from 'socket.io-client'
 
 import store from '../store/store'
-import { addInvitation, setPendingInvitations } from '../store/actions/users'
+import { addInvitation, addUser, setPendingInvitations, setUsers } from '../store/actions/users'
 let socket = null
 
 export const connectWithSocketServer = user => {
@@ -15,11 +15,16 @@ export const connectWithSocketServer = user => {
         console.log('successfully connected with socket.io server ', socket.id)
     })
 
-    socket.on('initial-sync', ({ pendingInvitations }) => {
+    socket.on('initial-sync', ({ users, pendingInvitations }) => {
         store.dispatch(setPendingInvitations(pendingInvitations))
+        store.dispatch(setUsers(users))
     })
 
     socket.on('invitation', data => {
         store.dispatch(addInvitation(data))
+    })
+
+    socket.on('add-user', data => {
+        store.dispatch(addUser(data))
     })
 }

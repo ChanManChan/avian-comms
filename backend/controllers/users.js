@@ -1,6 +1,6 @@
 const Invitation = require("../models/Invitation")
 const User = require("../models/User")
-const { sendInvitation } = require("../socketServer")
+const { sendInvitation, sendUserListUpdate } = require("../socketServer")
 
 const inviteUser = async (req, res) => {
     const { targetMailAddress } = req.body
@@ -43,8 +43,21 @@ const inviteAction = async (req, res) => {
         const validInvitation = await Invitation.exists({ _id: invitationId, receiverId: userId })
         if (validInvitation) {
             await Invitation.findByIdAndDelete(invitationId)
-            // notify receiver to remove from client
+            return res.status(200).send('Invitation successfully rejected')
         }
+    } else {
+        const invitation = await Invitation.findById(invitationId)
+         if (!invitation) {
+             return res.status(404).send('Invitation not found')
+         }
+
+         const { senderId, receiverId } = invitation
+         await User.findByIdAndUpdate(senderId, { $addToSet: { people: receiverId } })
+         const { _id, mail, username } = await User.findByIdAndUpdate(receiverId, { $addToSet: { people: senderId } }, { new: true })
+         await Invitation.findByIdAndDelete(invitationId)
+
+         sendUserListUpdate(senderId, { _id: _id.toString(), mail, username })
+         return res.status(200).send('Invitation successfully accepted')
     }
 }
 

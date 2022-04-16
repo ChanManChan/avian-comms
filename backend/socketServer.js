@@ -1,5 +1,6 @@
 const { verifySocketToken } = require('./middleware/auth')
 const Invitation = require('./models/Invitation')
+const User = require('./models/User')
 const { addNewConnectedUser, removeConnectedUser, getActiveConnections, setSocketServerInstance, getSocketServerInstance } = require('./store')
 
 const registerSocketServer = server => {
@@ -28,7 +29,8 @@ const registerSocketServer = server => {
 
 const initialSync = async (userId, socket) => {
     const pendingInvitations = await Invitation.find({ receiverId: userId }).populate('senderId', '_id username mail').catch(err => console.error(err))
-    socket.emit('initial-sync', { pendingInvitations })
+    const user = await User.findById(userId, { _id: 1, people: 1 }).populate('people', '_id username mail')
+    socket.emit('initial-sync', { pendingInvitations, users: user.people })
 }
 
 const sendInvitation = ({ receiverId, senderId, _id }) => {
@@ -36,6 +38,13 @@ const sendInvitation = ({ receiverId, senderId, _id }) => {
     const io = getSocketServerInstance()
 
     receiverList.forEach(socketId => io.to(socketId).emit('invitation', { receiverId, senderId, _id }))
+}
+
+const sendUserListUpdate = (senderId, recipient) => {
+    const receiverList = getActiveConnections(senderId)
+    const io = getSocketServerInstance()
+    
+    receiverList.forEach(socketId => io.to(socketId).emit('add-user', recipient))
 }
 
 const newConnectionHandler = (socket) => {
@@ -47,4 +56,4 @@ const disconnectHandler = socket => {
     removeConnectedUser(socket.id)
 }
 
-module.exports = { registerSocketServer, sendInvitation }
+module.exports = { registerSocketServer, sendInvitation, sendUserListUpdate }

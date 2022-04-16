@@ -8,12 +8,12 @@ import './InvitationList.css'
 
 const InvitationList = ({ users, pendingInvitations, onlineUsers, invitationAction }) => {
 
-    const handleInviteAccept = invitationId => {
-        invitationAction({ action: 'accept', invitationId })
+    const handleInviteAccept = (invitationId, sender) => {
+        invitationAction({ action: 'accept', invitationId, sender })
     }
 
-    const handleInviteReject = invitationId => {
-        invitationAction({ action: 'reject', invitationId })
+    const handleInviteReject = (invitationId, sender) => {
+        invitationAction({ action: 'reject', invitationId, sender })
     }
 
     return (
@@ -22,10 +22,10 @@ const InvitationList = ({ users, pendingInvitations, onlineUsers, invitationActi
                 <FlatButton key={senderId._id} text={senderId.username}>
                     <TextAvatar text={senderId.username} />
                     <aside style={{ whiteSpace: 'nowrap' }}>
-                        <span className='singleActionButton' onClick={() => handleInviteAccept(_id)}>
+                        <span className='singleActionButton' onClick={() => handleInviteAccept(_id, senderId)}>
                             <i className="fa-solid fa-check"></i>
                         </span>
-                        <span className='singleActionButton' onClick={() => handleInviteReject(_id)}>
+                        <span className='singleActionButton' onClick={() => handleInviteReject(_id, senderId)}>
                             <i className="fa-solid fa-xmark"></i>
                         </span>
                     </aside>
