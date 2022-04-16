@@ -7,7 +7,7 @@
     border-radius: var(--borderRadius);
     padding: var(--spacing);
     position: fixed;
-    z-index: 1;
+    z-index: 10;
     left: 50%;
     bottom: 30px;
     font-size: 18px;

@@ -10,6 +10,12 @@ const invitationSchema = Joi.object({
     targetMailAddress: Joi.string().email()
 })
 
+const invitationActionSchema = Joi.object({
+    action: Joi.string().valid('accept', 'reject'),
+    invitationId: Joi.string().required()
+})
+
 router.post('/invite', verifyToken, validator.body(invitationSchema), controllers.inviteUser)
+router.put('/invite', verifyToken, validator.body(invitationActionSchema), controllers.inviteAction)
 
 module.exports = router

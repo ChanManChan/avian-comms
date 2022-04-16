@@ -13,6 +13,11 @@ const reducer = (state = INITIAL_STATE, action) => {
                 ...state,
                 pendingInvitations: action.pendingInvitations
             }
+        case USER_ACTIONS.ADD_INVITATION:
+            return {
+                ...state,
+                pendingInvitations: [action.invitation, ...state.pendingInvitations]
+            }
         case USER_ACTIONS.SET_USERS:
             return {
                 ...state,
