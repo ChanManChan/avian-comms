@@ -2,8 +2,7 @@ import { USER_ACTIONS } from '../actions/users'
 
 const INITIAL_STATE = {
     users: [],
-    pendingInvitations: [],
-    onlineUsers: []
+    pendingInvitations: []
 }
 
 const reducer = (state = INITIAL_STATE, action) => {
@@ -21,7 +20,17 @@ const reducer = (state = INITIAL_STATE, action) => {
         case USER_ACTIONS.ADD_USER:
             return {
                 ...state,
-                users: [action.user, ...state.users]
+                users: [{ ...action.user, isOnline: false }, ...state.users]
+            }
+        case USER_ACTIONS.UPDATE_ONLINE_STATUS:
+            return {
+                ...state,
+                users: state.users.map(user => {
+                    if (user._id === action.userId) {
+                        return { ...user, isOnline: action.isOnline }
+                    }
+                    return user
+                })
             }
         case USER_ACTIONS.REMOVE_INVITATION:
             return {
@@ -31,7 +40,7 @@ const reducer = (state = INITIAL_STATE, action) => {
         case USER_ACTIONS.SET_USERS:
             return {
                 ...state,
-                users: action.users
+                users: action.users.map(user => ({ ...user, isOnline: false }))
             }
         case USER_ACTIONS.SET_ONLINE_USERS:
             return {

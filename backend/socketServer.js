@@ -15,36 +15,52 @@ const registerSocketServer = server => {
 
     io.use((socket, next) => verifySocketToken(socket, next))
 
-    io.on('connection', socket => {
+    io.on('connection', async socket => {
         const userId = socket.user.userId
-        console.log('user connected: ', userId)
+        const pendingInvitations = await Invitation.find({ receiverId: userId }).populate('senderId', '_id username mail').catch(err => console.error(err))
+        const user = await User.findById(userId, { _id: 1, people: 1 }).populate('people', '_id username mail')
         newConnectionHandler(socket)
-        initialSync(userId, socket)
+        initialSync(userId, pendingInvitations, user.people, socket)
+        
+        socket.on('acknowledge-presence', ({ ackFrom, ackTo }) => {
+            const receiverList = getActiveConnections(ackTo)
+            receiverList.forEach(socketId => io.to(socketId).emit('advertise-presence', { userId: ackFrom, advertisementType: 'pulseIn' }))
+        })
 
         socket.on('disconnect', () => {
             disconnectHandler(socket)
+            advertiseAbsence(userId, user.people)
         })
     })
 }
 
-const initialSync = async (userId, socket) => {
-    const pendingInvitations = await Invitation.find({ receiverId: userId }).populate('senderId', '_id username mail').catch(err => console.error(err))
-    const user = await User.findById(userId, { _id: 1, people: 1 }).populate('people', '_id username mail')
-    socket.emit('initial-sync', { pendingInvitations, users: user.people })
+const initialSync = (userId, pendingInvitations, people, socket) => {
+    advertisePresence(userId, people)
+    socket.emit('initial-sync', { pendingInvitations, users: people })
 }
 
 const sendInvitation = ({ receiverId, senderId, _id }) => {
     const receiverList = getActiveConnections(receiverId)
     const io = getSocketServerInstance()
-
     receiverList.forEach(socketId => io.to(socketId).emit('invitation', { receiverId, senderId, _id }))
 }
 
 const sendUserListUpdate = (senderId, recipient) => {
     const receiverList = getActiveConnections(senderId)
     const io = getSocketServerInstance()
-    
     receiverList.forEach(socketId => io.to(socketId).emit('add-user', recipient))
+}
+
+const advertisePresence = (userId, people) => {
+    const receiverList = people.map(person => getActiveConnections(person._id)).flat()
+    const io = getSocketServerInstance()
+    receiverList.forEach(socketId => io.to(socketId).emit('advertise-presence', { userId, advertisementType: 'pulseOut' }))
+}
+
+const advertiseAbsence = (userId, people) => {
+    const receiverList = people.map(person => getActiveConnections(person._id)).flat()
+    const io = getSocketServerInstance()
+    receiverList.forEach(socketId => io.to(socketId).emit('advertise-absence', userId))
 }
 
 const newConnectionHandler = (socket) => {

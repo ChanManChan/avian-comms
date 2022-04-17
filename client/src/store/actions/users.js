@@ -6,6 +6,7 @@ export const USER_ACTIONS = {
     SET_PENDING_INVITATIONS: 'USERS.SET_PENDING_INVITATIONS',
     ADD_INVITATION: 'USERS.ADD_INVITATION',
     ADD_USER: 'USERS.ADD_USER',
+    UPDATE_ONLINE_STATUS: 'USERS.UPDATE_ONLINE_STATUS',
     REMOVE_INVITATION: 'USERS.REMOVE_INVITATION',
     SET_ONLINE_USERS: 'USERS.SET_ONLINE_USERS'
 }
@@ -57,6 +58,14 @@ export const addUser = user => {
     return {
         type: USER_ACTIONS.ADD_USER,
         user
+    }
+}
+
+export const updateOnlineStatus = (userId, isOnline) => {
+    return {
+        type: USER_ACTIONS.UPDATE_ONLINE_STATUS,
+        userId,
+        isOnline
     }
 }
 
