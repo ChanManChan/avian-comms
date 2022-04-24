@@ -1,0 +1,14 @@
+.messageChainWrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing);
+}
+
+.messageChainWrapper .messageChain {
+    margin-left: var(--spacing);
+}
+
+.messageChainWrapper .messageChain p {
+    margin: unset;
+    margin-bottom: 5px;
+}
