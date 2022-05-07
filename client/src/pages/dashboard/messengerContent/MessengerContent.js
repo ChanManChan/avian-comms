@@ -1,79 +1,39 @@
 import React, { useEffect } from "react"
+import { connect } from 'react-redux'
 
+import { getActions } from "../../../store/actions/chat"
 import Message from "../message/Message"
 import MessageComponse from '../messageCompose/MessageCompose'
 import "./MessengerContent.css"
 
-const MessengerContent = ({ chosenChatDetails }) => {
-  const DUMMY_MESSAGES = [
-    {
-      _id: 1,
-      content: "hello",
-      sameAuthor: "false",
-      author: {
-        username: "Marek",
-      },
-      date: "22/01/2022",
-      sameDay: false,
-    },
-    {
-      _id: 2,
-      content: "hello once again",
-      sameAuthor: "true",
-      author: {
-        username: "Marek",
-      },
-      date: "22/01/2022",
-      sameDay: true,
-    },
-    {
-      _id: 3,
-      content: "hello third time",
-      sameAuthor: "true",
-      author: {
-        username: "Marek",
-      },
-      date: "23/01/2022",
-      sameDay: false,
-    },
-    {
-      _id: 4,
-      content: "hello response first time",
-      sameAuthor: false,
-      author: {
-        username: "John",
-      },
-      date: "23/01/2022",
-      sameDay: true,
-    },
-    {
-      _id: 5,
-      content: "hello response third time",
-      sameAuthor: true,
-      author: {
-        username: "John",
-      },
-      date: "24/01/2022",
-      sameDay: false,
-    },
-  ]
+const MessengerContent = ({ chosenChatDetails, getChosenChatHistory, userDetails, messages }) => {
 
-  useEffect(() => {}, [chosenChatDetails])
+  useEffect(() => {
+    getChosenChatHistory({ 
+      senderId: userDetails._id, 
+      receiverId: chosenChatDetails._id, 
+      pageSize: 20, 
+      pageNumber: 0 
+    })
+  }, [chosenChatDetails])
 
   return (
     <section className="messengerContent">
-      <div className="messengerHeader">
-        <p>
-          This is the beginning of your conversation with{" "}
-          {chosenChatDetails.username}
-        </p>
-      </div>
       <div className="messagesContainer">
-        {DUMMY_MESSAGES.map((message) => <Message message={message} key={message._id} />)}
+        <div className="messengerHeader">
+          <p>
+            This is the beginning of your conversation with{" "}
+            {chosenChatDetails.username}
+          </p>
+        </div>
+        {messages.map((message) => <Message message={message} key={message._id} />)}
       </div>
       <MessageComponse />
     </section>
   )
 }
 
-export default MessengerContent
+const mapStateToProps = state => ({ ...state.auth, ...state.chat })
+const mapActionsToProps = dispatch => ({ ...getActions(dispatch) })
+
+export default connect(mapStateToProps, mapActionsToProps)(MessengerContent)

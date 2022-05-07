@@ -1,0 +1,12 @@
+.messageComposeContainer {
+    box-shadow: 0px 0px 10px var(--grey);
+}
+
+.messageComposeContainer .inputWrapper br {
+    display: none;
+}
+
+.messageComposeContainer .inputWrapper input {
+    margin: unset;
+    height: 50px;
+}

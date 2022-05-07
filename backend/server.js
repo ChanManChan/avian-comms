@@ -15,8 +15,10 @@ app.use(cors())
 // routes
 const authRoutes = require('./routes/auth')
 const userRoutes = require('./routes/users')
+const communicationRoutes = require('./routes/communication')
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
+app.use('/api/communications', communicationRoutes)
 
 const server = http.createServer(app)
 socketServer.registerSocketServer(server)

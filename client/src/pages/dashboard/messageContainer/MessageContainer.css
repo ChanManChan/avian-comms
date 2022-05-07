@@ -1,5 +1,6 @@
 .messageContainer {
     flex: 1;
+    overflow-y: hidden;
 }
 
 .welcomeMessage {

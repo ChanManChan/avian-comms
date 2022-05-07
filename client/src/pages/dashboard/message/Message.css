@@ -1,20 +1,27 @@
 .initialMessageWrapper {
     display: flex;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 .initialMessageWrapper .initialMessage {
     margin-left: var(--spacing);
+    flex: 1;
 }
 
 .initialMessageWrapper .initialMessage p {
     margin: unset;
     margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.initialMessageWrapper .initialMessage p small {
+    font-weight: 300;
 }
 
 .messagesContainer .chainMessage {
-    display: inline-block;
+    display: block;
     margin-left: 57px;
     margin-top: 3px;
 }

@@ -15,10 +15,10 @@ const reducer = (state = INITIAL_STATE, action) => {
                 chatType: action.chatType,
                 messages: []
             }
-        case CHAT_ACTIONS.SET_MESSAGES:
+        case CHAT_ACTIONS.PREPEND_MESSAGES:
             return {
                 ...state,
-                messages: action.messages
+                messages: [...action.messages, ...state.messages]
             }
         default:
             return state

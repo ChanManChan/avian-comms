@@ -1,6 +1,7 @@
 import React from 'react'
 
 import TextAvatar from '../../../shared/components/textAvatar/TextAvatar'
+import { dateFormatter } from '../../../shared/utils'
 import './Message.css'
 
 const Message = ({ message : { content, author: { username }, sameAuthor, date, sameDay }}) => {
@@ -12,7 +13,7 @@ const Message = ({ message : { content, author: { username }, sameAuthor, date, 
         <div className='initialMessageWrapper'>
             <TextAvatar text={username} />
             <div className='initialMessage'>
-                <p>{username} <small>{date}</small></p>
+                <p><strong>{username}</strong> <small>{dateFormatter(date)}</small></p>
                 <span>{content}</span>
             </div>
         </div>
