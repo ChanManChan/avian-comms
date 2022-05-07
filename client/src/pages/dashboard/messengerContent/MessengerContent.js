@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from "react"
 
-import Message from "../message/Message";
-import "./MessengerContent.css";
+import Message from "../message/Message"
+import MessageComponse from '../messageCompose/MessageCompose'
+import "./MessengerContent.css"
 
 const MessengerContent = ({ chosenChatDetails }) => {
   const DUMMY_MESSAGES = [
@@ -66,10 +67,11 @@ const MessengerContent = ({ chosenChatDetails }) => {
           This is the beginning of your conversation with{" "}
           {chosenChatDetails.username}
         </p>
-        {DUMMY_MESSAGES.map((message) => (
-          <Message message={message} key={message._id} />
-        ))}
       </div>
+      <div className="messagesContainer">
+        {DUMMY_MESSAGES.map((message) => <Message message={message} key={message._id} />)}
+      </div>
+      <MessageComponse />
     </section>
   )
 }

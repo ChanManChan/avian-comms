@@ -1,5 +1,8 @@
+const { default: mongoose } = require('mongoose')
 const { verifySocketToken } = require('./middleware/auth')
+const Conversation = require('./models/Conversation')
 const Invitation = require('./models/Invitation')
+const Message = require('./models/Message')
 const User = require('./models/User')
 const { addNewConnectedUser, removeConnectedUser, getActiveConnections, setSocketServerInstance, getSocketServerInstance } = require('./store')
 
@@ -25,6 +28,10 @@ const registerSocketServer = server => {
         socket.on('acknowledge-presence', ({ ackFrom, ackTo }) => {
             const receiverList = getActiveConnections(ackTo)
             receiverList.forEach(socketId => io.to(socketId).emit('advertise-presence', { userId: ackFrom, advertisementType: 'pulseIn' }))
+        })
+        
+        socket.on('direct-message', data => {
+            directMessageHandler(userId, data)
         })
 
         socket.on('disconnect', () => {
@@ -61,6 +68,35 @@ const advertiseAbsence = (userId, people) => {
     const receiverList = people.map(person => getActiveConnections(person._id)).flat()
     const io = getSocketServerInstance()
     receiverList.forEach(socketId => io.to(socketId).emit('advertise-absence', userId))
+}
+
+const directMessageHandler = async (userId, data) => {
+    const { receiverId, content } = data
+    let message = await Message.create({ content, author: userId, date: new Date(), type: "DIRECT" }).catch(e => console.error(e))
+    message = await message.populate("author", "-password -people")
+    const conversation = await Conversation.findOneAndUpdate(
+        { participants: { $all: [
+            { $elemMatch: { $eq: mongoose.Types.ObjectId(userId) }},
+            { $elemMatch: { $eq: mongoose.Types.ObjectId(receiverId) }},
+        ] } },
+        { $addToSet: { messages: message._id }, $setOnInsert: { participants: [ userId, receiverId ] } },
+        { upsert: true, new: true }
+    ).catch(e => console.error(e))
+    updateChatHistory(message, conversation)
+}
+
+const updateChatHistory = (message, conversation) => {
+    const io = getSocketServerInstance()
+
+    conversation.participants.forEach(participant => {
+        const activeConnections = getActiveConnections(participant)
+        activeConnections.forEach(socketId => {
+            io.to(socketId).emit("direct-message", {
+                message,
+                participants: conversation.participants
+            })
+        })
+    })
 }
 
 const newConnectionHandler = (socket) => {

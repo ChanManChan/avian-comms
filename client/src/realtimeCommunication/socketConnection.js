@@ -38,4 +38,12 @@ export const connectWithSocketServer = user => {
     socket.on('advertise-absence', data => {
         store.dispatch(updateOnlineStatus(data, false))
     })
+
+    socket.on('direct-message', data => {
+        console.log(data)
+    })
+}
+
+export const sendDirectMessage = data => {
+    socket.emit('direct-message', data)
 }

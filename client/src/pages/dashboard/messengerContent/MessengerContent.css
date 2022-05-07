@@ -1,3 +1,14 @@
-.messengerHeader {
+.messengerContent {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.messengerHeader,
+.messagesContainer {
     padding: var(--spacing);
+}
+
+.messagesContainer {
+    flex: 1;
 }

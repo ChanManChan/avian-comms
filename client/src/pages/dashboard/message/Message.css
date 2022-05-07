@@ -1,14 +1,20 @@
-.messageChainWrapper {
+.initialMessageWrapper {
     display: flex;
     align-items: center;
-    margin-bottom: var(--spacing);
+    margin-top: 20px;
 }
 
-.messageChainWrapper .messageChain {
+.initialMessageWrapper .initialMessage {
     margin-left: var(--spacing);
 }
 
-.messageChainWrapper .messageChain p {
+.initialMessageWrapper .initialMessage p {
     margin: unset;
     margin-bottom: 5px;
+}
+
+.messagesContainer .chainMessage {
+    display: inline-block;
+    margin-left: 57px;
+    margin-top: 3px;
 }

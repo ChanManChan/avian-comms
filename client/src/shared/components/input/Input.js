@@ -3,14 +3,20 @@ import React, { useRef } from 'react'
 import './Input.css'
 import { generateUUID } from '../../utils'
 
-const Input = ({ type = 'text', placeholder = 'Enter the value here', label = '', onChange, value = '' }) => {
+const Input = ({ type = 'text', placeholder = 'Enter the value here', label = '', onChange, value = '', handleKeyDown }) => {
     const id = useRef(generateUUID(10))
 
     return (
         <div className='inputWrapper'>
             {label !== '' && <label htmlFor={id.current}>{label}</label>}
             <br />
-            <input id={id.current} type={type} placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)} />
+            <input 
+             id={id.current} 
+             type={type} 
+             placeholder={placeholder} 
+             value={value} 
+             onChange={e => onChange(e.target.value)}
+             onKeyDown={handleKeyDown} />
         </div>
     )
 }
