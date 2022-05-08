@@ -5,10 +5,10 @@ import Button from '../../../shared/components/button/Button'
 import { logout } from '../../../shared/utils'
 import './Appbar.css'
 
-const Appbar = ({ username }) => {
+const Appbar = ({ username, signedInUser }) => {
     return (
         <header className='appbarContainer'>
-            <span>{username ? `Chosen coversation: ${username}`: ''}</span>
+            <span>{username ? `Chosen coversation: ${username}`: `Signed-in as ${signedInUser}`}</span>
             <Button text="Logout" className='logoutBtn' onClick={logout}>
                 <i className='fa-solid fa-arrow-right-from-bracket'></i>
             </Button>
@@ -16,6 +16,9 @@ const Appbar = ({ username }) => {
     )
 }
 
-const mapStateToProps = state => ({ username: state.chat.chosenChatDetails?.username })
+const mapStateToProps = state => ({ 
+    username: state.chat.chosenChatDetails?.username, 
+    signedInUser: state.auth.userDetails?.username
+})
 
 export default connect(mapStateToProps)(Appbar)

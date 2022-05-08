@@ -37,7 +37,7 @@ const getChosenChatHistory = data => async dispatch => {
     }
 }
 
-const prependMessages = messages => {
+export const prependMessages = messages => {
     function* windowGenerator(inputArray, size) {
         for (let index = 0; index + size <= inputArray.length; index++) {
             yield inputArray.slice(index, index + size)

@@ -23,7 +23,8 @@ const MessageCompose = ({ chosenChatDetails }) => {
 
     return (
         <div className="messageComposeContainer">
-            <Input 
+            <Input
+             autoFocus
              value={message} 
              onChange={setMessage} 
              placeholder={`Write message to ${chosenChatDetails.username}`}

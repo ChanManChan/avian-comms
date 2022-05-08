@@ -6,9 +6,10 @@ import TextAvatar from '../../../shared/components/textAvatar/TextAvatar'
 import { CHAT_TYPES, getActions } from '../../../store/actions/chat'
 import './UserList.css'
 
-const UserList = ({ users = [], setChosenChatDetails }) => {
+const UserList = ({ users = [], setChosenChatDetails, chosenChatDetails }) => {
 
     const setActiveConversation = (chatDetails, chatType) => {
+        if (chosenChatDetails?._id === chatDetails._id) return
         setChosenChatDetails(chatDetails, chatType)
     }
 
@@ -23,7 +24,7 @@ const UserList = ({ users = [], setChosenChatDetails }) => {
     )
 }
 
-const mapStateToProps = state => ({ ...state.users })
+const mapStateToProps = state => ({ ...state.users, ...state.chat })
 const mapActionsToPros = dispatch => ({ ...getActions(dispatch) })
 
 export default connect(mapStateToProps, mapActionsToPros)(UserList)
