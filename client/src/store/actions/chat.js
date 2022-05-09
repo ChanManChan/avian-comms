@@ -10,6 +10,7 @@ export const CHAT_TYPES = {
 export const CHAT_ACTIONS = {
     SET_CHOSEN_CHAT_DETAILS: 'CHAT.SET_CHOSEN_CHAT_DETAILS',
     PREPEND_MESSAGES: 'CHAT.PREPEND_MESSAGES',
+    ADD_MESSAGE: 'CHAT.ADD_MESSAGE',
     SET_CHAT_TYPE: 'CHAT.SET_CHAT_TYPE'
 }
 
@@ -34,6 +35,17 @@ const getChosenChatHistory = data => async dispatch => {
         dispatch(showAlertMessage(response.exception.response.data))
     } else {
         dispatch(prependMessages(response.data.messages))
+    }
+}
+
+export const addMessage = (message, lastMessage) => {
+    return {
+        type: CHAT_ACTIONS.ADD_MESSAGE,
+        message: {
+            ...message,
+            sameAuthor: lastMessage?.author._id === message.author._id,
+            sameDay: dateFormatter(lastMessage?.createdAt) === dateFormatter(message.createdAt)
+        }
     }
 }
 

@@ -20,6 +20,11 @@ const reducer = (state = INITIAL_STATE, action) => {
                 ...state,
                 messages: [...action.messages, ...state.messages]
             }
+        case CHAT_ACTIONS.ADD_MESSAGE:
+            return {
+                ...state,
+                messages: [...state.messages, action.message]
+            }
         default:
             return state
     }

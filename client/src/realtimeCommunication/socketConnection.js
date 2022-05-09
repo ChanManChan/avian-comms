@@ -2,6 +2,7 @@ import io from 'socket.io-client'
 
 import store from '../store/store'
 import { addInvitation, addUser, setPendingInvitations, setUsers, updateOnlineStatus } from '../store/actions/users'
+import { addMessage } from '../store/actions/chat'
 let socket = null
 
 export const connectWithSocketServer = user => {
@@ -40,7 +41,8 @@ export const connectWithSocketServer = user => {
     })
 
     socket.on('direct-message', data => {
-        console.log(data)
+        const lastMessage = store.getState().chat.messages.at(-1)
+        store.dispatch(addMessage(data.message, lastMessage))
     })
 }
 
