@@ -30,7 +30,7 @@ export const validateMail = email => /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{
 export const validatePassword = ({ length }) => length >= 6 && length <= 12
 export const validateUsername = ({ length }) => length >= 3 && length <= 12
 
-export const dateFormatter = date => new Date(date).toLocaleDateString()
+export const dateFormatter = date => new Date(date).toLocaleDateString('en-us', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })
 
 export const logout = () => {
     localStorage.clear()

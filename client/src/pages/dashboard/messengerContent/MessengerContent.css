@@ -16,6 +16,10 @@
     height: 100%;
 }
 
+.messengerHeader P {
+    margin: unset;
+}
+
 .messengerHeader,
 .messagesContainer {
     padding: var(--spacing);

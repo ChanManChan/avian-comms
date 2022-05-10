@@ -10,13 +10,22 @@ const Message = React.forwardRef(({ message : { content, author: { username }, s
     }
 
     return (
-        <div className='initialMessageWrapper' ref={ref}>
-            <TextAvatar text={username} />
-            <div className='initialMessage'>
-                <p><strong>{username}</strong> <small>{dateFormatter(date)}</small></p>
-                <span>{content}</span>
+        <>
+            {!sameDay && (
+                <div className='dayDivider'>
+                    <hr />
+                    {dateFormatter(date)}
+                    <hr />
+                </div>
+            )}
+            <div className='initialMessageWrapper' ref={ref}>
+                <TextAvatar text={username} />
+                <div className='initialMessage'>
+                    <p><strong>{username}</strong></p>
+                    <span>{content}</span>
+                </div>
             </div>
-        </div>
+        </>
     )
 })
 

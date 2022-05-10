@@ -12,16 +12,23 @@
 .initialMessageWrapper .initialMessage p {
     margin: unset;
     margin-bottom: 5px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.initialMessageWrapper .initialMessage p small {
-    font-weight: 300;
 }
 
 .messagesContainer .chainMessage {
     display: block;
     margin-left: 57px;
     margin-top: 3px;
+}
+
+.messagesContainer .dayDivider {
+    display: flex;
+    align-items: center;
+    margin-top: 30px;
+    color: var(--primary);
+}
+
+.messagesContainer .dayDivider hr {
+    flex-grow: 1;
+    margin: 0 var(--spacing);
+    color: inherit;
 }

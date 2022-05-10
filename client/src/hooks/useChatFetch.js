@@ -6,7 +6,10 @@ import { prependMessages } from '../store/actions/chat'
 
 export default function useChatFetch() {
     const dispatch = useDispatch()
-    const { userDetails: { _id: senderId }, chosenChatDetails: { _id: receiverId } } = useSelector(store => ({ ...store.chat, ...store.auth }))
+    const {
+        userDetails: { _id: senderId }, 
+        chosenChatDetails: { _id: receiverId }
+    } = useSelector(store => ({ ...store.chat, ...store.auth }))
     const [loading, setLoading] = useState(true)
     const [more, setMore] = useState(false)
     const [pageNumber, setPageNumber] = useState(0)

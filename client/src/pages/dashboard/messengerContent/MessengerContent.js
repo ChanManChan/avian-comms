@@ -22,7 +22,7 @@ const MessengerContent = ({ chosenChatDetails, messages }) => {
               </p>
             </div>
             <Messages messages={messages} />
-            <div ref={ele => ele?.scrollIntoView()} />
+            <div ref={ele => messages.length <= 20 && ele?.scrollIntoView()} />
           </div>
           <MessageComponse />
         </section>

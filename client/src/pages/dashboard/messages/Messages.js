@@ -7,7 +7,7 @@ const Messages = ({ messages }) => {
     const observer = useRef()
     const { loading, more, setPageNumber } = useChatFetch()
     
-    const lastMessageRef = useCallback(node => {
+    const firstMessageRef = useCallback(node => {
         if (loading) return
         if (observer.current) observer.current.disconnect()
         observer.current = new IntersectionObserver(entries => {
@@ -20,7 +20,7 @@ const Messages = ({ messages }) => {
     
     return messages.map((message, index) => {
         if (index === 0) {
-          return <Message ref={lastMessageRef} message={message} key={message._id} />
+          return <Message ref={firstMessageRef} message={message} key={message._id} />
         } else {
           return <Message message={message} key={message._id} />
         }
