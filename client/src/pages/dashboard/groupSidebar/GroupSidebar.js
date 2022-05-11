@@ -7,7 +7,7 @@ const GroupSidebar = () => {
     const SidebarButton = () => {
         return (
             <button className='sidebarButton'>
-                <i className='fa-solid fa-user-group'></i>
+                <i class="fa-solid fa-people-arrows-left-right"></i>
             </button>
         )
     }

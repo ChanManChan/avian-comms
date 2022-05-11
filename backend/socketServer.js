@@ -20,7 +20,11 @@ const registerSocketServer = server => {
 
     io.on('connection', async socket => {
         const userId = socket.user.userId
-        const pendingInvitations = await Invitation.find({ receiverId: userId }).populate('senderId', '_id username mail').catch(err => console.error(err))
+        const pendingInvitations = await Invitation
+                        .find({ recipients: { $elemMatch: { recipient: userId, status: "Pending" } } })
+                        .populate('senderId', '_id username mail')
+                        .catch(err => console.error(err))
+
         const user = await User.findById(userId, { _id: 1, people: 1 }).populate('people', '_id username mail')
         newConnectionHandler(socket)
         initialSync(userId, pendingInvitations, user.people, socket)
