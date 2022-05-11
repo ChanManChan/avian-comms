@@ -11,13 +11,15 @@ export const CHAT_ACTIONS = {
     SET_CHOSEN_CHAT_DETAILS: 'CHAT.SET_CHOSEN_CHAT_DETAILS',
     PREPEND_MESSAGES: 'CHAT.PREPEND_MESSAGES',
     ADD_MESSAGE: 'CHAT.ADD_MESSAGE',
-    SET_CHAT_TYPE: 'CHAT.SET_CHAT_TYPE'
+    SET_CHAT_TYPE: 'CHAT.SET_CHAT_TYPE',
+    REMOVE_LIVE_TAG: 'CHAT.REMOVE_LIVE_TAG'
 }
 
 export const getActions = dispatch => {
     return {
         setChosenChatDetails: (chatDetails, chatType) => dispatch(setChosenChatDetails(chatDetails, chatType)),
-        getChosenChatHistory: data => dispatch(getChosenChatHistory(data))
+        getChosenChatHistory: data => dispatch(getChosenChatHistory(data)),
+        removeLiveTag: () => dispatch(removeLiveTag())
     }
 }
 
@@ -44,8 +46,15 @@ export const addMessage = (message, lastMessage) => {
         message: {
             ...message,
             sameAuthor: lastMessage?.author._id === message.author._id,
-            sameDay: dateFormatter(lastMessage?.createdAt) === dateFormatter(message.createdAt)
+            sameDay: dateFormatter(lastMessage?.createdAt) === dateFormatter(message.createdAt),
+            live: true
         }
+    }
+}
+
+const removeLiveTag = () => {
+    return {
+        type: CHAT_ACTIONS.REMOVE_LIVE_TAG
     }
 }
 

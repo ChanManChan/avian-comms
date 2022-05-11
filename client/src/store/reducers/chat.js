@@ -31,10 +31,21 @@ const reducer = (state = INITIAL_STATE, action) => {
                     ]: state.messages)
                 ]
             }
-        case CHAT_ACTIONS.ADD_MESSAGE:
+        case CHAT_ACTIONS.ADD_MESSAGE: {
+            const messages = state.messages.slice(0, -1)
+            const currentLastMessage = state.messages.at(-1)
+            delete currentLastMessage?.live
             return {
                 ...state,
-                messages: [...state.messages, action.message]
+                messages: [...messages, ...(currentLastMessage ? [currentLastMessage] : []), action.message]
+            }
+        }
+        case CHAT_ACTIONS.REMOVE_LIVE_TAG:
+            const lastMessage = state.messages.at(-1)
+            delete lastMessage.live
+            return {
+                ...state,
+                messages: [...state.messages.slice(0, -1), lastMessage]
             }
         default:
             return state

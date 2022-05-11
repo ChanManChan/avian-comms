@@ -1,11 +1,12 @@
 import React from "react"
 import { connect } from 'react-redux'
+import { getActions } from "../../../store/actions/chat"
 
 import MessageComponse from '../messageCompose/MessageCompose'
 import Messages from "../messages/Messages"
 import "./MessengerContent.css"
 
-const MessengerContent = ({ chosenChatDetails, messages }) => {
+const MessengerContent = ({ chosenChatDetails, messages, removeLiveTag }) => {
   return (
     <main className='messageContainer'>
       {!chosenChatDetails ? (
@@ -14,7 +15,11 @@ const MessengerContent = ({ chosenChatDetails, messages }) => {
           </div>
       ) : (
         <section className="messengerContent">
-          <div className="messagesContainer">
+          <div className="messagesContainer" onScroll={() => {
+            if (messages.at(-1)?.live) {
+              removeLiveTag()
+            }
+          }}>
             <div className="messengerHeader">
               <p>
                 This is the beginning of your conversation with{" "}
@@ -22,7 +27,7 @@ const MessengerContent = ({ chosenChatDetails, messages }) => {
               </p>
             </div>
             <Messages messages={messages} />
-            <div ref={ele => messages.length <= 20 && ele?.scrollIntoView()} />
+            <div ref={ele => messages.at(-1)?.live ? ele?.scrollIntoView() : messages.length <= 20 && ele?.scrollIntoView()} />
           </div>
           <MessageComponse />
         </section>
@@ -32,5 +37,6 @@ const MessengerContent = ({ chosenChatDetails, messages }) => {
 }
 
 const mapStateToProps = state => ({ ...state.chat })
+const mapActionsToProps = dispatch => ({ ...getActions(dispatch) })
 
-export default connect(mapStateToProps)(MessengerContent)
+export default connect(mapStateToProps, mapActionsToProps)(MessengerContent)

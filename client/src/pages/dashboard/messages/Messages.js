@@ -21,9 +21,8 @@ const Messages = ({ messages }) => {
     return messages.map((message, index) => {
         if (index === 0) {
           return <Message ref={firstMessageRef} message={message} key={message._id} />
-        } else {
-          return <Message message={message} key={message._id} />
         }
+        return <Message message={message} key={message._id} />
       })
 }
 
