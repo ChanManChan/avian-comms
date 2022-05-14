@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { validateMail } from '../../../shared/utils'
 import Input from '../../../shared/components/input/Input'
 import Button from '../../../shared/components/button/Button'
-import { getActions } from '../../../store/actions/users'
+import { getActions } from '../../../store/actions/communication'
 import './SendInvitationForm.css'
 
 const SendInvitationForm = ({ open = false, onClose, sendInvitation }) => {

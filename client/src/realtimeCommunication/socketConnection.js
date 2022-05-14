@@ -1,7 +1,7 @@
 import io from 'socket.io-client'
 
 import store from '../store/store'
-import { addInvitation, addUser, setPendingInvitations, setUsers, updateOnlineStatus } from '../store/actions/users'
+import { addInvitation, addUser, setConversations, setPendingInvitations, updateOnlineStatus } from '../store/actions/communication'
 import { addMessage } from '../store/actions/chat'
 let socket = null
 
@@ -16,9 +16,17 @@ export const connectWithSocketServer = user => {
         console.log('successfully connected with socket.io server ', socket.id)
     })
 
-    socket.on('initial-sync', ({ users, pendingInvitations }) => {
+    socket.on('initial-sync', ({ users, pendingInvitations, userDetails }) => {
+        const directConversations = []
+        const groupConversations = []
+        userDetails.conversations.forEach(x => {
+            if (x.isGroupConversation) {
+                return groupConversations.push(x)
+            }
+            directConversations.push({ ...x, participants: x.participants.map(y => ({ ...y, isOnline: false })) })
+        })
         store.dispatch(setPendingInvitations(pendingInvitations))
-        store.dispatch(setUsers(users))
+        store.dispatch(setConversations(directConversations, groupConversations))
     })
 
     socket.on('invitation', data => {

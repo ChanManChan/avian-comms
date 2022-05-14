@@ -4,14 +4,14 @@ import thunk from 'redux-thunk'
 
 import authReducer from './reducers/auth'
 import alertReducer from './reducers/alert'
-import usersReducer from './reducers/users'
+import communicationReducer from './reducers/communication'
 import chatReducer from './reducers/chat'
 import roomReducer from './reducers/room'
 
 const rootReducer = combineReducers({
     auth: authReducer,
     alert: alertReducer,
-    users: usersReducer,
+    communication: communicationReducer,
     chat: chatReducer,
     room: roomReducer
 })

@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { getActions } from '../../../store/actions/users'
+import { getActions } from '../../../store/actions/communication'
 import FlatButton from '../../../shared/components/flatButton/FlatButton'
 import TextAvatar from '../../../shared/components/textAvatar/TextAvatar'
 import './InvitationList.css'
@@ -35,7 +35,7 @@ const InvitationList = ({ users, pendingInvitations, onlineUsers, invitationActi
     )
 }
 
-const mapStateToProps = state => ({ ...state.users })
+const mapStateToProps = state => ({ ...state.communication })
 const mapActionsToProps = dispatch => ({ ...getActions(dispatch) })
 
 export default connect(mapStateToProps, mapActionsToProps)(InvitationList)

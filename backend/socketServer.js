@@ -1,4 +1,6 @@
 const { default: mongoose } = require('mongoose')
+const util = require('util')
+
 const { verifySocketToken } = require('./middleware/auth')
 const Conversation = require('./models/Conversation')
 const Invitation = require('./models/Invitation')
@@ -21,13 +23,29 @@ const registerSocketServer = server => {
     io.on('connection', async socket => {
         const userId = socket.user.userId
         const pendingInvitations = await Invitation
-                        .find({ recipients: { $elemMatch: { recipient: userId, status: "Pending" } } })
+                        .find({ recipients: [{ recipient: userId, status: "Pending" }] })
                         .populate('senderId', '_id username mail')
                         .catch(err => console.error(err))
+        const user = await User
+                        .findById(userId)
+                        .populate({ 
+                            path: 'conversations', 
+                            populate: { 
+                                path: 'participants', 
+                                select: '-password -conversations',
+                                match: {
+                                    _id: { $ne: userId }
+                                }
+                            } 
+                        })
 
-        const user = await User.findById(userId, { _id: 1, people: 1 }).populate('people', '_id username mail')
+        console.log(util.inspect(user, { depth: 4 }))
+        const directChatUsers = [
+            ...new Set(user.conversations.filter(({ isGroupConversation }) => !isGroupConversation).map(({ participants }) => participants.find(x => x._id.toString() !== userId)))
+        ]
+
         newConnectionHandler(socket)
-        initialSync(userId, pendingInvitations, user.people, socket)
+        initialSync(userId, pendingInvitations, directChatUsers, user, socket)
         
         socket.on('acknowledge-presence', ({ ackFrom, ackTo }) => {
             const receiverList = getActiveConnections(ackTo)
@@ -40,17 +58,19 @@ const registerSocketServer = server => {
 
         socket.on('disconnect', () => {
             disconnectHandler(socket)
-            advertiseAbsence(userId, user.people)
+            advertiseAbsence(userId, [])
         })
     })
 }
 
-const initialSync = (userId, pendingInvitations, people, socket) => {
-    advertisePresence(userId, people)
-    socket.emit('initial-sync', { pendingInvitations, users: people })
+const initialSync = async (userId, pendingInvitations, directChatUsers, userDetails, socket) => {
+    // const users = await User.find({ _id: { $in: directChatUsers }}).select('-password')
+    advertisePresence(userId, directChatUsers)
+    socket.emit('initial-sync', { pendingInvitations, users: directChatUsers, userDetails })
 }
 
-const sendInvitation = ({ receiverId, senderId, _id }) => {
+const sendInvitation = ({ recipients, senderId, _id }) => {
+    const receiverId = recipients[0].recipient
     const receiverList = getActiveConnections(receiverId)
     const io = getSocketServerInstance()
     receiverList.forEach(socketId => io.to(socketId).emit('invitation', { receiverId, senderId, _id }))
@@ -62,8 +82,8 @@ const sendUserListUpdate = (senderId, recipient) => {
     receiverList.forEach(socketId => io.to(socketId).emit('add-user', recipient))
 }
 
-const advertisePresence = (userId, people) => {
-    const receiverList = people.map(person => getActiveConnections(person._id)).flat()
+const advertisePresence = (userId, directChatUsers) => {
+    const receiverList = directChatUsers.map(({ _id }) => getActiveConnections(_id)).flat()
     const io = getSocketServerInstance()
     receiverList.forEach(socketId => io.to(socketId).emit('advertise-presence', { userId, advertisementType: 'pulseOut' }))
 }

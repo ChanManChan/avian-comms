@@ -6,17 +6,17 @@ import TextAvatar from '../../../shared/components/textAvatar/TextAvatar'
 import { CHAT_TYPES, getActions } from '../../../store/actions/chat'
 import './UserList.css'
 
-const UserList = ({ users = [], setChosenChatDetails, chosenChatDetails }) => {
+const UserList = ({ directConversations = [], setChosenChatDetails, chosenChatDetails }) => {
 
     const setActiveConversation = (chatDetails, chatType) => {
-        if (chosenChatDetails?._id === chatDetails._id) return
+        if (chosenChatDetails?.conversationId === chatDetails.conversationId) return
         setChosenChatDetails(chatDetails, chatType)
     }
 
     return (
         <section className='userListContainer'>
-            {users.map(({ _id, username, isOnline }) => (
-                <FlatButton key={_id} text={username} onClick={() => setActiveConversation({ _id, username }, CHAT_TYPES.DIRECT)}>
+            {directConversations.map(({ _id: conversationId, participants: [{ _id, username, isOnline }] }) => (
+                <FlatButton key={conversationId} text={username} onClick={() => setActiveConversation({ _id, username, conversationId }, CHAT_TYPES.DIRECT)}>
                     <TextAvatar text={username} secondary={isOnline}/>
                 </FlatButton>
             ))}
@@ -24,7 +24,7 @@ const UserList = ({ users = [], setChosenChatDetails, chosenChatDetails }) => {
     )
 }
 
-const mapStateToProps = state => ({ ...state.users, ...state.chat })
+const mapStateToProps = state => ({ ...state.communication, ...state.chat })
 const mapActionsToPros = dispatch => ({ ...getActions(dispatch) })
 
 export default connect(mapStateToProps, mapActionsToPros)(UserList)
