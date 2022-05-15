@@ -1,10 +1,9 @@
 import React from 'react'
 
 import TextAvatar from '../../../shared/components/textAvatar/TextAvatar'
-import { dateFormatter } from '../../../shared/utils'
 import './Message.css'
 
-const Message = React.forwardRef(({ message : { content, author: { username }, sameAuthor, date, sameDay }}, ref) => {
+const Message = React.forwardRef(({ message : { content, author: { username }, sameAuthor, createdAt, sameDay }}, ref) => {
     if (sameAuthor && sameDay) {
         return <span className='chainMessage'>{content}</span>
     }
@@ -14,7 +13,7 @@ const Message = React.forwardRef(({ message : { content, author: { username }, s
             {!sameDay && (
                 <div className='dayDivider'>
                     <hr />
-                    {dateFormatter(date)}
+                    {createdAt}
                     <hr />
                 </div>
             )}

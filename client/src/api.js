@@ -39,13 +39,8 @@ export const invitationAction = async data => {
     })
 }
 
-export const fetchChatHistory = async ({ senderId, receiverId, pageSize, pageNumber }) => {
-    return await apiClient.get('/communications/messages', { params: {
-        senderId,
-        receiverId,
-        pageSize,
-        pageNumber
-    }})
+export const fetchChatHistory = async ({ conversationId, pageSize, pageNumber }) => {
+    return await apiClient.get('/communications/messages', { params: { conversationId, pageSize, pageNumber }})
     .catch(e => {
         checkResponseCode(e)
         return { error: true, exception: e }

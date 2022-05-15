@@ -1,7 +1,7 @@
 import io from 'socket.io-client'
 
 import store from '../store/store'
-import { addInvitation, addUser, setConversations, setPendingInvitations, updateOnlineStatus } from '../store/actions/communication'
+import { addInvitation, addConversation, setConversations, setPendingInvitations, updateOnlineStatus } from '../store/actions/communication'
 import { addMessage } from '../store/actions/chat'
 let socket = null
 
@@ -34,7 +34,9 @@ export const connectWithSocketServer = user => {
     })
 
     socket.on('add-user', data => {
-        store.dispatch(addUser(data))
+        const userId = store.getState().auth.userDetails._id
+        const participant = data.participants.filter(x => x._id !== userId)
+        store.dispatch(addConversation({ ...data, participants: [{ ...participant[0], isOnline: true }] }))
     })
 
     socket.on('advertise-presence', ({ userId, advertisementType }) => {
@@ -50,7 +52,7 @@ export const connectWithSocketServer = user => {
 
     socket.on('direct-message', data => {
         const lastMessage = store.getState().chat.messages.at(-1)
-        store.dispatch(addMessage(data.message, lastMessage))
+        store.dispatch(addMessage(data, lastMessage))
     })
 }
 

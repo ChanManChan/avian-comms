@@ -10,7 +10,7 @@ const MessageCompose = ({ chosenChatDetails }) => {
 
     const handleSendMessage = () => {
         if (message.trim().length > 0) {
-            sendDirectMessage({ receiverId: chosenChatDetails._id, content: message.trim() })
+            sendDirectMessage({ conversationId: chosenChatDetails.conversationId, content: message.trim() })
             setMessage('')
         }
     }

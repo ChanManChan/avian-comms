@@ -38,13 +38,13 @@ const inviteUser = async (req, res) => {
 
 const inviteAction = async (req, res) => {
     const { action, invitationId } = req.body
-    const { userId, mail, username } = req.user
+    const { userId } = req.user
 
     if (action === 'reject') {
         const validInvitation = await Invitation.exists({ _id: invitationId, recipients: [{ recipient: userId, status: 'Pending' }] })
         if (validInvitation) {
             await Invitation.findByIdAndDelete(invitationId)
-            return res.status(200).send('Invitation successfully rejected')
+            return res.status(200).json({ message: 'Invitation successfully rejected' })
         }
     } else {
         const invitation = await Invitation.findById(invitationId)
@@ -54,12 +54,13 @@ const inviteAction = async (req, res) => {
 
          const { senderId } = invitation
 
-         const conversation = await Conversation.create({ participants: [senderId, userId], isGroupConversation: false })
+         let conversation = await Conversation.create({ participants: [senderId, userId], isGroupConversation: false })
+         conversation = await conversation.populate('participants', '-password -conversations')
          await User.updateMany({ _id: { $in: [userId, senderId] } }, { $addToSet: { conversations: conversation._id } })
          await Invitation.findByIdAndDelete(invitationId)
 
-         sendUserListUpdate(senderId, { _id: userId, mail, username })
-         return res.status(200).send('Invitation successfully accepted')
+         sendUserListUpdate(senderId, conversation)
+         return res.status(200).json({ conversation, message: 'Invitation successfully accepted' })
     }
 }
 

@@ -7,7 +7,7 @@ import { CHAT_TYPES, getActions } from '../../../store/actions/chat'
 import './UserList.css'
 
 const UserList = ({ directConversations = [], setChosenChatDetails, chosenChatDetails }) => {
-
+    
     const setActiveConversation = (chatDetails, chatType) => {
         if (chosenChatDetails?.conversationId === chatDetails.conversationId) return
         setChosenChatDetails(chatDetails, chatType)
@@ -15,8 +15,8 @@ const UserList = ({ directConversations = [], setChosenChatDetails, chosenChatDe
 
     return (
         <section className='userListContainer'>
-            {directConversations.map(({ _id: conversationId, participants: [{ _id, username, isOnline }] }) => (
-                <FlatButton key={conversationId} text={username} onClick={() => setActiveConversation({ _id, username, conversationId }, CHAT_TYPES.DIRECT)}>
+            {directConversations.map(({ _id: conversationId, participants: [{ username, isOnline }] }) => (
+                <FlatButton key={conversationId} text={username} onClick={() => setActiveConversation({ username, conversationId }, CHAT_TYPES.DIRECT)}>
                     <TextAvatar text={username} secondary={isOnline}/>
                 </FlatButton>
             ))}

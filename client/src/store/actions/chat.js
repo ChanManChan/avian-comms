@@ -40,15 +40,18 @@ const getChosenChatHistory = data => async dispatch => {
     }
 }
 
-export const addMessage = (message, lastMessage) => {
+export const addMessage = ({ message, conversation }, lastMessage) => {
+    const createdAt = dateFormatter(message.createdAt)
     return {
         type: CHAT_ACTIONS.ADD_MESSAGE,
         message: {
             ...message,
             sameAuthor: lastMessage?.author._id === message.author._id,
-            sameDay: dateFormatter(lastMessage?.createdAt) === dateFormatter(message.createdAt),
+            sameDay: dateFormatter(lastMessage?.createdAt) === createdAt,
+            createdAt,
             live: true
-        }
+        },
+        conversation
     }
 }
 
@@ -72,21 +75,21 @@ export const prependMessages = messages => {
     return {
         type: CHAT_ACTIONS.PREPEND_MESSAGES,
         messages: toWindows(messages.reverse(), 2).map((window, index) => {
-            if (index === 0) {
-                return [
-                    { ...window[0], sameAuthor: false, sameDay: false },
-                    { 
-                        ...window[1], 
-                        sameAuthor: window[0].author._id === window[1].author._id, 
-                        sameDay: dateFormatter(window[0].createdAt) === dateFormatter(window[1].createdAt)
-                    }
-                ]
-            }
-            return { 
-                ...window[1], 
+            const message = {
+                ...window[1],
+                createdAt: dateFormatter(window[1].createdAt),
                 sameAuthor: window[0].author._id === window[1].author._id, 
                 sameDay: dateFormatter(window[0].createdAt) === dateFormatter(window[1].createdAt)
             }
+
+            if (index === 0) {
+                return [
+                    { ...window[0], createdAt: dateFormatter(window[0].createdAt), sameAuthor: false, sameDay: false },
+                    message
+                ]
+            }
+            
+            return message
         }).flat()
     }
 }

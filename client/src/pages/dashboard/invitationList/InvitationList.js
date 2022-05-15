@@ -6,14 +6,14 @@ import FlatButton from '../../../shared/components/flatButton/FlatButton'
 import TextAvatar from '../../../shared/components/textAvatar/TextAvatar'
 import './InvitationList.css'
 
-const InvitationList = ({ users, pendingInvitations, onlineUsers, invitationAction }) => {
+const InvitationList = ({ pendingInvitations, invitationAction }) => {
 
-    const handleInviteAccept = (invitationId, sender) => {
-        invitationAction({ action: 'accept', invitationId, sender })
+    const handleInviteAccept = (invitationId, senderId) => {
+        invitationAction({ action: 'accept', invitationId, senderId })
     }
 
-    const handleInviteReject = (invitationId, sender) => {
-        invitationAction({ action: 'reject', invitationId, sender })
+    const handleInviteReject = (invitationId, senderId) => {
+        invitationAction({ action: 'reject', invitationId, senderId })
     }
 
     return (

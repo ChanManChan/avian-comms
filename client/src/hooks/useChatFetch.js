@@ -6,10 +6,7 @@ import { prependMessages } from '../store/actions/chat'
 
 export default function useChatFetch() {
     const dispatch = useDispatch()
-    const {
-        userDetails: { _id: senderId }, 
-        chosenChatDetails: { _id: receiverId }
-    } = useSelector(store => ({ ...store.chat, ...store.auth }))
+    const { chosenChatDetails: { conversationId } } = useSelector(store => ({ ...store.chat }))
     const [loading, setLoading] = useState(true)
     const [more, setMore] = useState(false)
     const [pageNumber, setPageNumber] = useState(0)
@@ -17,7 +14,7 @@ export default function useChatFetch() {
     useEffect(() => {
         setPageNumber(0)
         updateChatHistory(0)
-    }, [receiverId])
+    }, [conversationId])
 
     useEffect(() => {
         if (pageNumber > 0) {
@@ -28,9 +25,9 @@ export default function useChatFetch() {
     const updateChatHistory = pageNumber => {
         setLoading(true)
         
-        fetchChatHistory({ senderId, receiverId, pageSize: 20, pageNumber })
+        fetchChatHistory({ conversationId, pageSize: 20, pageNumber })
         .then(res => {
-            const messages = res.data.messages ?? []
+            const messages = res.data ?? []
             dispatch(prependMessages(messages))
             setMore(messages.length > 0)
             setLoading(false)

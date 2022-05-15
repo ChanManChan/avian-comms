@@ -24,19 +24,19 @@ const reducer = (state = INITIAL_STATE, action) => {
                 directConversations: action.directConversations,
                 groupConversations: action.groupConversations
             }
-        case COMMUNICATION_ACTIONS.ADD_USER:
+        case COMMUNICATION_ACTIONS.ADD_CONVERSATION:
             return {
                 ...state,
-                users: [{ ...action.user, isOnline: false }, ...state.users]
+                directConversations: [...state.directConversations, action.conversation]
             }
         case COMMUNICATION_ACTIONS.UPDATE_ONLINE_STATUS:
             return {
                 ...state,
-                directConversations: state.directConversations.map(user => {
-                    if (user._id === action.userId) {
-                        return { ...user, isOnline: action.isOnline }
+                directConversations: state.directConversations.map(conversation => {
+                    if (conversation.participants[0]._id === action.userId) {
+                        return { ...conversation, participants: [{ ...conversation.participants[0], isOnline: action.isOnline }] }
                     }
-                    return user
+                    return conversation
                 })
             }
         case COMMUNICATION_ACTIONS.REMOVE_INVITATION:

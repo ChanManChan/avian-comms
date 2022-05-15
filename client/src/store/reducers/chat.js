@@ -32,6 +32,10 @@ const reducer = (state = INITIAL_STATE, action) => {
                 ]
             }
         case CHAT_ACTIONS.ADD_MESSAGE: {
+            const conversationId = action.conversation._id
+            if (conversationId !== state.chosenChatDetails.conversationId) {
+                return state
+            }
             const messages = state.messages.slice(0, -1)
             const currentLastMessage = state.messages.at(-1)
             delete currentLastMessage?.live

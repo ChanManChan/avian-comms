@@ -1,6 +1,3 @@
-const { default: mongoose } = require('mongoose')
-const util = require('util')
-
 const { verifySocketToken } = require('./middleware/auth')
 const Conversation = require('./models/Conversation')
 const Invitation = require('./models/Invitation')
@@ -39,7 +36,6 @@ const registerSocketServer = server => {
                             } 
                         })
 
-        console.log(util.inspect(user, { depth: 4 }))
         const directChatUsers = [
             ...new Set(user.conversations.filter(({ isGroupConversation }) => !isGroupConversation).map(({ participants }) => participants.find(x => x._id.toString() !== userId)))
         ]
@@ -58,7 +54,7 @@ const registerSocketServer = server => {
 
         socket.on('disconnect', () => {
             disconnectHandler(socket)
-            advertiseAbsence(userId, [])
+            advertiseAbsence(userId, directChatUsers)
         })
     })
 }
@@ -73,13 +69,13 @@ const sendInvitation = ({ recipients, senderId, _id }) => {
     const receiverId = recipients[0].recipient
     const receiverList = getActiveConnections(receiverId)
     const io = getSocketServerInstance()
-    receiverList.forEach(socketId => io.to(socketId).emit('invitation', { receiverId, senderId, _id }))
+    receiverList.forEach(socketId => io.to(socketId).emit('invitation', { recipients, senderId, _id }))
 }
 
-const sendUserListUpdate = (senderId, recipient) => {
+const sendUserListUpdate = (senderId, conversation) => {
     const receiverList = getActiveConnections(senderId)
     const io = getSocketServerInstance()
-    receiverList.forEach(socketId => io.to(socketId).emit('add-user', recipient))
+    receiverList.forEach(socketId => io.to(socketId).emit('add-user', conversation))
 }
 
 const advertisePresence = (userId, directChatUsers) => {
@@ -88,24 +84,19 @@ const advertisePresence = (userId, directChatUsers) => {
     receiverList.forEach(socketId => io.to(socketId).emit('advertise-presence', { userId, advertisementType: 'pulseOut' }))
 }
 
-const advertiseAbsence = (userId, people) => {
-    const receiverList = people.map(person => getActiveConnections(person._id)).flat()
+const advertiseAbsence = (userId, directChatUsers) => {
+    const receiverList = directChatUsers.map(({ _id }) => getActiveConnections(_id)).flat()
     const io = getSocketServerInstance()
     receiverList.forEach(socketId => io.to(socketId).emit('advertise-absence', userId))
 }
 
 const directMessageHandler = async (userId, data) => {
-    const { receiverId, content } = data
-    let message = await Message.create({ content, author: userId, date: new Date(), type: "DIRECT" }).catch(e => console.error(e))
-    message = await message.populate("author", "-password -people")
-    const conversation = await Conversation.findOneAndUpdate(
-        { participants: { $all: [
-            { $elemMatch: { $eq: mongoose.Types.ObjectId(userId) }},
-            { $elemMatch: { $eq: mongoose.Types.ObjectId(receiverId) }},
-        ] } },
-        { $addToSet: { messages: message._id }, $setOnInsert: { participants: [ userId, receiverId ] } },
-        { upsert: true, new: true }
-    ).catch(e => console.error(e))
+    const { conversationId, content } = data
+    let message = await Message.create({ content, author: userId, conversation: conversationId }).catch(e => console.error(e))
+    message = await message.populate("author", "-password -conversations")
+    const conversation = await Conversation
+                        .findByIdAndUpdate(conversationId, { lastMessage: message._id }, { new: true })
+                        .catch(e => console.error(e))
     updateChatHistory(message, conversation)
 }
 
@@ -117,7 +108,7 @@ const updateChatHistory = (message, conversation) => {
         activeConnections.forEach(socketId => {
             io.to(socketId).emit("direct-message", {
                 message,
-                participants: conversation.participants
+                conversation
             })
         })
     })

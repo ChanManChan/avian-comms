@@ -42,6 +42,20 @@ body {
   --wrapperBoxShadow: 5px 5px 1px var(--dark);
 }
 
+::-webkit-scrollbar {
+  width: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--dark);
+  border-radius: 20px;
+  border: transparent;
+}
+
 input,
 button {
   border: none;
