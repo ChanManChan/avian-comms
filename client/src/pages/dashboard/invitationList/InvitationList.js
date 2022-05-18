@@ -1,12 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
+import { CHAT_TYPES } from '../../../store/actions/chat'
 import { getActions } from '../../../store/actions/communication'
 import FlatButton from '../../../shared/components/flatButton/FlatButton'
 import TextAvatar from '../../../shared/components/textAvatar/TextAvatar'
 import './InvitationList.css'
 
-const InvitationList = ({ pendingInvitations, invitationAction }) => {
+const InvitationList = ({ pendingDirectInvitations, pendingGroupInvitations, chatType, invitationAction }) => {
 
     const handleInviteAccept = (invitationId, senderId) => {
         invitationAction({ action: 'accept', invitationId, senderId })
@@ -18,24 +19,28 @@ const InvitationList = ({ pendingInvitations, invitationAction }) => {
 
     return (
         <section className='invitationListContainer'>
-            {pendingInvitations.map(({ _id, senderId }) => (
-                <FlatButton key={senderId._id} text={senderId.username}>
-                    <TextAvatar text={senderId.username} />
-                    <aside style={{ whiteSpace: 'nowrap' }}>
-                        <span className='singleActionButton' onClick={() => handleInviteAccept(_id, senderId)}>
-                            <i className="fa-solid fa-check"></i>
-                        </span>
-                        <span className='singleActionButton' onClick={() => handleInviteReject(_id, senderId)}>
-                            <i className="fa-solid fa-xmark"></i>
-                        </span>
-                    </aside>
-                </FlatButton>
-            ))}
+            {chatType === CHAT_TYPES.DIRECT ? (
+                pendingDirectInvitations.map(({ _id, senderId }) => (
+                    <FlatButton key={senderId._id} text={senderId.username}>
+                        <TextAvatar text={senderId.username} />
+                        <aside style={{ whiteSpace: 'nowrap' }}>
+                            <span className='singleActionButton' onClick={() => handleInviteAccept(_id, senderId)}>
+                                <i className="fa-solid fa-check"></i>
+                            </span>
+                            <span className='singleActionButton' onClick={() => handleInviteReject(_id, senderId)}>
+                                <i className="fa-solid fa-xmark"></i>
+                            </span>
+                        </aside>
+                    </FlatButton>
+                ))
+            ) : (
+                pendingGroupInvitations.map(({ _id, senderId }) => _id)
+            )}
         </section>
     )
 }
 
-const mapStateToProps = state => ({ ...state.communication })
+const mapStateToProps = state => ({ ...state.communication, chatType: state.chat.chatType })
 const mapActionsToProps = dispatch => ({ ...getActions(dispatch) })
 
 export default connect(mapStateToProps, mapActionsToProps)(InvitationList)

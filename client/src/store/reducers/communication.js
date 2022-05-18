@@ -1,7 +1,8 @@
 import { COMMUNICATION_ACTIONS } from '../actions/communication'
 
 const INITIAL_STATE = {
-    pendingInvitations: [],
+    pendingDirectInvitations: [],
+    pendingGroupInvitations: [],
     directConversations: [],
     groupConversations: []
 }
@@ -11,12 +12,24 @@ const reducer = (state = INITIAL_STATE, action) => {
         case COMMUNICATION_ACTIONS.SET_PENDING_INVITATIONS:
             return {
                 ...state,
-                pendingInvitations: action.pendingInvitations
+                pendingDirectInvitations: action.pendingDirectInvitations,
+                pendingGroupInvitations: action.pendingGroupInvitations
             }
         case COMMUNICATION_ACTIONS.ADD_INVITATION:
             return {
                 ...state,
-                pendingInvitations: [action.invitation, ...state.pendingInvitations]
+                ...(action.invitationType === 'group' ? 
+                    { pendingGroupInvitations: [action.invitation, ...state.pendingGroupInvitations] }
+                    :
+                    { pendingDirectInvitations: [action.invitation, ...state.pendingDirectInvitations] })
+            }
+        case COMMUNICATION_ACTIONS.REMOVE_INVITATION:
+            return {
+                ...state,
+                ...(action.invitationType === 'group' ?
+                    { pendingGroupInvitations: state.pendingGroupInvitations.filter(invitation => invitation._id !== action.invitationId) } 
+                    :
+                    { pendingDirectInvitations: state.pendingDirectInvitations.filter(invitation => invitation._id !== action.invitationId) })
             }
         case COMMUNICATION_ACTIONS.SET_CONVERSATIONS:
             return {
@@ -38,11 +51,6 @@ const reducer = (state = INITIAL_STATE, action) => {
                     }
                     return conversation
                 })
-            }
-        case COMMUNICATION_ACTIONS.REMOVE_INVITATION:
-            return {
-                ...state,
-                pendingInvitations: state.pendingInvitations.filter(invitation => invitation._id !== action.invitationId)
             }
         case COMMUNICATION_ACTIONS.SET_ONLINE_USERS:
             return {

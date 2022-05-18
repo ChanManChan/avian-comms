@@ -6,7 +6,7 @@ import TextAvatar from '../../../shared/components/textAvatar/TextAvatar'
 import { CHAT_TYPES, getActions } from '../../../store/actions/chat'
 import './UserList.css'
 
-const UserList = ({ directConversations = [], setChosenChatDetails, chosenChatDetails }) => {
+const UserList = ({ directConversations = [], groupConversations = [], setChosenChatDetails, chosenChatDetails, chatType }) => {
     
     const setActiveConversation = (chatDetails, chatType) => {
         if (chosenChatDetails?.conversationId === chatDetails.conversationId) return
@@ -15,11 +15,15 @@ const UserList = ({ directConversations = [], setChosenChatDetails, chosenChatDe
 
     return (
         <section className='userListContainer'>
-            {directConversations.map(({ _id: conversationId, participants: [{ username, isOnline }] }) => (
-                <FlatButton key={conversationId} text={username} onClick={() => setActiveConversation({ username, conversationId }, CHAT_TYPES.DIRECT)}>
-                    <TextAvatar text={username} secondary={isOnline}/>
-                </FlatButton>
-            ))}
+            {chatType === CHAT_TYPES.DIRECT ? (
+                directConversations.map(({ _id: conversationId, participants: [{ username, isOnline }] }) => (
+                    <FlatButton key={conversationId} text={username} onClick={() => setActiveConversation({ username, conversationId }, CHAT_TYPES.DIRECT)}>
+                        <TextAvatar text={username} secondary={isOnline}/>
+                    </FlatButton>
+                ))
+            ) : (
+                groupConversations.map(({ _id }) => _id)
+            )}
         </section>
     )
 }

@@ -7,8 +7,7 @@ const recipientSchema = new mongoose.Schema({
 
 const InvitationSchema = new mongoose.Schema({
     senderId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    recipients: [recipientSchema],
-    groupName: String
+    recipients: [recipientSchema]
 }, { timestamps: true })
 
 module.exports = mongoose.model('Invitation', InvitationSchema)

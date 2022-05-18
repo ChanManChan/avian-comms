@@ -35,10 +35,22 @@ const invitationAction = data => async dispatch => {
     }
 }
 
-export const setPendingInvitations = pendingInvitations => {
+export const setPendingInvitations = (pendingInvitations = []) => {
+    const pendingDirectInvitations = []
+    const pendingGroupInvitations = []
+
+    pendingInvitations.forEach(invitation => {
+        if (invitation.recipients.length === 1) {
+            pendingDirectInvitations.push(invitation)
+        } else {
+            pendingGroupInvitations.push(invitation)
+        }
+    })
+
     return {
         type: COMMUNICATION_ACTIONS.SET_PENDING_INVITATIONS,
-        pendingInvitations
+        pendingDirectInvitations,
+        pendingGroupInvitations
     }
 }
 

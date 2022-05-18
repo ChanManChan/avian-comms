@@ -1,9 +1,9 @@
 import { dateFormatter } from '../../shared/utils'
-import { CHAT_ACTIONS } from '../actions/chat'
+import { CHAT_ACTIONS, CHAT_TYPES } from '../actions/chat'
 
 const INITIAL_STATE = {
     chosenChatDetails: null,
-    chatType: null,
+    chatType: CHAT_TYPES.DIRECT,
     messages: []
 }
 
@@ -15,6 +15,11 @@ const reducer = (state = INITIAL_STATE, action) => {
                 chosenChatDetails: action.chatDetails,
                 chatType: action.chatType,
                 messages: []
+            }
+        case CHAT_ACTIONS.SET_CHAT_TYPE:
+            return {
+                ...state,
+                chatType: action.chatType
             }
         case CHAT_ACTIONS.PREPEND_MESSAGES:
             return {
