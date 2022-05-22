@@ -1,0 +1,15 @@
+.sendGroupInvitationContainer .recipientsChipGroup {
+    margin: var(--spacing) 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.sendGroupInvitationContainer .recipientsChipGroup .chipButton {
+    margin-right: var(--spacing);
+    margin-bottom: var(--spacing);
+}
+
+.sendGroupInvitationContainer button.genericButton {
+    display: block;
+    margin-left: auto;
+}

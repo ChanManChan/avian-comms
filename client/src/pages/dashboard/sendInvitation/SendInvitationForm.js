@@ -21,7 +21,7 @@ const SendInvitationForm = ({ open = false, onClose, sendInvitation }) => {
     }, [mail, open])
 
     const handleSendInvitation = () => {
-        sendInvitation({ targetMailAddress: mail }, onClose)
+        sendInvitation({ recipients: [mail] }, onClose)
     }
 
     return (

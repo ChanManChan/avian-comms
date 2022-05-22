@@ -7,7 +7,7 @@ const { controllers } = require('../controllers/users')
 const { verifyToken } = require('../middleware/auth')
 
 const invitationSchema = Joi.object({
-    targetMailAddress: Joi.string().email()
+    recipients: Joi.array().items(Joi.string().email()).required()
 })
 
 const invitationActionSchema = Joi.object({

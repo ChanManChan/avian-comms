@@ -4,36 +4,70 @@ const User = require("../models/User")
 const { sendInvitation, sendUserListUpdate } = require("../socketServer")
 
 const inviteUser = async (req, res) => {
-    const { targetMailAddress } = req.body
+    let { recipients } = req.body
     const { userId, mail } = req.user
 
-    if (mail.toLowerCase() == targetMailAddress.toLowerCase()) {
-        return res.status(409).send('Invalid recipient mail address')
+    if (recipients.length > 1) {
+        recipients = recipients.filter(x => x !== mail)
+        const targetUsers = await User.find({ mail: { $in: recipients }}).select('-conversations -password')
+
+        if (targetUsers.length === 0) {
+            return res.status(404).send('None of the recipients were found')
+        }
+
+        const targetUserIds = targetUsers.map(x => x._id)
+
+        const invitationPending = await Invitation.exists({ 
+            senderId: userId, 
+            recipients: { $size: targetUsers.length },
+            'recipients.recipient': { $in: targetUserIds }
+        })
+        
+        if (invitationPending) {
+            return res.status(409).send('Invitation already exists')
+        }
+
+        const alreadyAcquainted = await Conversation.findOne({ isGroupConversation: true, participants: [userId, ...targetUserIds] })
+
+        if (alreadyAcquainted) {
+            return res.status(409).send('Already Acquainted')
+        }
+
+        let createdInvitation = await Invitation.create({ senderId: userId, recipients: targetUsers.map(x => ({ recipient: x._id, status: 'Pending' })) })
+        createdInvitation = await createdInvitation.populate('senderId', '-password')
+
+        sendInvitation(createdInvitation)
+        
+        return res.status(200).json('Group invitation has been sent')
+    } else {
+        if (recipients.length === 1 && mail.toLowerCase() == recipients[0].toLowerCase()) {
+            return res.status(409).send('Cannot send invitation to yourself')
+        }
+    
+        const targetUser = await User.findOne({ mail: recipients[0].toLowerCase() })
+    
+        if (!targetUser) {
+            return res.status(404).send('Recipient not found')
+        }
+    
+        const invitationPending = await Invitation.exists({ senderId: userId, recipients: [{ recipient: targetUser._id, status: 'Pending' }] })
+    
+        if (invitationPending) {
+            return res.status(409).send('Invitation is already in pending status')
+        }
+    
+        const alreadyAcquainted = await Conversation.findOne({ isGroupConversation: false, participants: [userId, targetUser._id] })
+    
+        if (alreadyAcquainted) {
+            return res.status(409).send('Already Acquainted')
+        }
+    
+        let createdInvitation = await Invitation.create({ senderId: userId, recipients: [{ recipient: targetUser._id, status: 'Pending' }] })
+        createdInvitation = await createdInvitation.populate('senderId', '-password')
+        sendInvitation(createdInvitation)
+    
+        return res.status(201).send('Invitation has been sent')
     }
-
-    const targetUser = await User.findOne({ mail: targetMailAddress.toLowerCase() })
-
-    if (!targetUser) {
-        return res.status(404).send('Recipient not found')
-    }
-
-    const invitationPending = await Invitation.exists({ senderId: userId, recipients: [{ recipient: targetUser._id, status: 'Pending' }] })
-
-    if (invitationPending) {
-        return res.status(409).send('Invitation is already in pending status')
-    }
-
-    const alreadyAcquainted = await Conversation.findOne({ isGroupConversation: false, participants: [userId, targetUser._id] })
-
-    if (alreadyAcquainted) {
-        return res.status(409).send('Already Acquainted')
-    }
-
-    let createdInvitation = await Invitation.create({ senderId: userId, recipients: [{ recipient: targetUser._id, status: 'Pending' }] })
-    createdInvitation = await createdInvitation.populate('senderId', '-password')
-    sendInvitation(createdInvitation)
-
-    return res.status(201).send('Invitation has been sent')
 }
 
 const inviteAction = async (req, res) => {

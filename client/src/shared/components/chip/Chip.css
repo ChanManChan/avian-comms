@@ -1,0 +1,12 @@
+.chipButton {
+    background-color: var(--primary);
+    color: white;
+    padding: 10px;
+    border-radius: var(--borderRadius);
+}
+
+.chipButton .chipCloseButton {
+    background-color: transparent;
+    color: inherit;
+    margin-left: 4px;
+}
