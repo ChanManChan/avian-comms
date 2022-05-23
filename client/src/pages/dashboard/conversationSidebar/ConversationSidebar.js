@@ -21,7 +21,7 @@ const ConversationSidebar = ({ chatType }) => {
         <aside className='conversationSidebarContainer'>
             <Button text={chatType === CHAT_TYPES.GROUP ? 'Create Group' : 'Add friend'} secondary onClick={() => setOpen(true)} />
             <main className='userList'>
-                <p className='sectionTitle'>PRIVATE MESSAGES</p>
+                <p className='sectionTitle'>{chatType === CHAT_TYPES.GROUP ? 'GROUP' : 'PRIVATE'} MESSAGES</p>
                 <UserList />
                 <p className='sectionTitle'>INVITATIONS</p>
                 <InvitationList />

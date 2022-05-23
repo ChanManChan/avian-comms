@@ -19,23 +19,19 @@ const InvitationList = ({ pendingDirectInvitations, pendingGroupInvitations, cha
 
     return (
         <section className='invitationListContainer'>
-            {chatType === CHAT_TYPES.DIRECT ? (
-                pendingDirectInvitations.map(({ _id, senderId }) => (
-                    <FlatButton key={senderId._id} text={senderId.username}>
-                        <TextAvatar text={senderId.username} />
-                        <aside style={{ whiteSpace: 'nowrap' }}>
-                            <span className='singleActionButton' onClick={() => handleInviteAccept(_id, senderId)}>
-                                <i className="fa-solid fa-check"></i>
-                            </span>
-                            <span className='singleActionButton' onClick={() => handleInviteReject(_id, senderId)}>
-                                <i className="fa-solid fa-xmark"></i>
-                            </span>
-                        </aside>
-                    </FlatButton>
-                ))
-            ) : (
-                pendingGroupInvitations.map(({ _id, senderId }) => _id)
-            )}
+            {(chatType === CHAT_TYPES.DIRECT ? pendingDirectInvitations : pendingGroupInvitations).map(({ _id, senderId }) => (
+                <FlatButton key={_id} text={senderId.username}>
+                    <TextAvatar text={senderId.username} />
+                    <aside style={{ whiteSpace: 'nowrap' }}>
+                        <span className='singleActionButton' onClick={() => handleInviteAccept(_id, senderId)}>
+                            <i className="fa-solid fa-check"></i>
+                        </span>
+                        <span className='singleActionButton' onClick={() => handleInviteReject(_id, senderId)}>
+                            <i className="fa-solid fa-xmark"></i>
+                        </span>
+                    </aside>
+                </FlatButton>
+            ))}
         </section>
     )
 }
