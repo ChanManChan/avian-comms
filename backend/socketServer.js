@@ -22,6 +22,7 @@ const registerSocketServer = server => {
         const pendingInvitations = await Invitation
                         .find({ 'recipients.recipient': { $eq: userId }, 'recipients.status': { $eq: 'Pending' } })
                         .populate('senderId', '_id username mail')
+                        .populate('recipients.recipient', '-conversations -password')
                         .catch(err => console.error(err))
         const user = await User
                         .findById(userId)

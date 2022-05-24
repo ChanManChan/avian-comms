@@ -18,3 +18,23 @@
 .invitationListContainer .flatButton .singleActionButton:nth-child(2) {
     margin-left: 10px;
 }
+
+.invitationListContainer .invitationDetails .recipientList {
+    margin: unset;
+    padding: unset;
+}
+
+.invitationListContainer .invitationDetails .recipientList li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.invitationListContainer .invitationDetails .recipientList hr {
+    flex-grow: 1;
+    margin: 0 var(--spacing);
+}
+
+.invitationListContainer .invitationDetails strong.invitationHeader {
+    text-decoration: underline;
+}
