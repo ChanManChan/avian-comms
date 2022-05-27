@@ -73,28 +73,39 @@ const inviteUser = async (req, res) => {
 const inviteAction = async (req, res) => {
     const { action, invitationId } = req.body
     const { userId } = req.user
+    const invitation = await Invitation.findById(invitationId)
+    
+    if (!invitation) {
+        return res.status(404).send('Invitation not found')
+    }
+
+    const { senderId, recipients } = invitation
 
     if (action === 'reject') {
-        const validInvitation = await Invitation.exists({ _id: invitationId, recipients: [{ recipient: userId, status: 'Pending' }] })
-        if (validInvitation) {
+        if (recipients.length === 1) {
             await Invitation.findByIdAndDelete(invitationId)
             return res.status(200).json({ message: 'Invitation successfully rejected' })
+        } else {
+            const { recipients } = await Invitation.findOneAndUpdate({ _id: invitationId, 'recipients.recipient': userId }, { $set: { 'recipients.$.status': 'Rejected' } }, { new: true })
+            if (recipients.every(({ status }) => ['Accepted', 'Rejected'].includes(status))) {
+                await Invitation.findByIdAndDelete(invitationId)
+            }
         }
     } else {
-        const invitation = await Invitation.findById(invitationId)
-         if (!invitation) {
-             return res.status(404).send('Invitation not found')
+         if (recipients.length === 1) {
+            let conversation = await Conversation.create({ participants: [senderId, userId], isGroupConversation: false })
+            conversation = await conversation.populate('participants', '-password -conversations')
+            await User.updateMany({ _id: { $in: [userId, senderId] } }, { $addToSet: { conversations: conversation._id } })
+            await Invitation.findByIdAndDelete(invitationId)
+   
+            sendUserListUpdate(senderId, conversation)
+            return res.status(200).json({ conversation, message: 'Invitation successfully accepted' })
+         } else {
+            const { recipients } = await Invitation.findOneAndUpdate({ _id: invitationId, 'recipients.recipient': userId }, { $set: { 'recipients.$.status': 'Accepted' } }, { new: true })
+            if (recipients.every(({ status }) => ['Accepted', 'Rejected'].includes(status))) {
+                await Invitation.findByIdAndDelete(invitationId)
+            }
          }
-
-         const { senderId } = invitation
-
-         let conversation = await Conversation.create({ participants: [senderId, userId], isGroupConversation: false })
-         conversation = await conversation.populate('participants', '-password -conversations')
-         await User.updateMany({ _id: { $in: [userId, senderId] } }, { $addToSet: { conversations: conversation._id } })
-         await Invitation.findByIdAndDelete(invitationId)
-
-         sendUserListUpdate(senderId, conversation)
-         return res.status(200).json({ conversation, message: 'Invitation successfully accepted' })
     }
 }
 

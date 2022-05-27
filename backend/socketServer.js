@@ -20,7 +20,7 @@ const registerSocketServer = server => {
     io.on('connection', async socket => {
         const userId = socket.user.userId
         const pendingInvitations = await Invitation
-                        .find({ 'recipients.recipient': { $eq: userId }, 'recipients.status': { $eq: 'Pending' } })
+                        .find({  recipients: { $elemMatch: { recipient: userId, status: 'Pending' } }})
                         .populate('senderId', '_id username mail')
                         .populate('recipients.recipient', '-conversations -password')
                         .catch(err => console.error(err))
