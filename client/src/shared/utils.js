@@ -31,6 +31,7 @@ export const validatePassword = ({ length }) => length >= 6 && length <= 12
 export const validateUsername = ({ length }) => length >= 3 && length <= 12
 
 export const dateFormatter = date => new Date(date).toLocaleDateString('en-us', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })
+export const commaSeparatedWithAnd = (text = '') => text.replace(/,\s([^,]+)$/, ' and $1')
 
 export const logout = () => {
     localStorage.clear()

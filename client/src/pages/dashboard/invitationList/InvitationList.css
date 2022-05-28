@@ -4,7 +4,6 @@
 
 .invitationListContainer .flatButton {
     width: 100%;
-    pointer-events: none;
 }
 
 .invitationListContainer .flatButton .singleActionButton {

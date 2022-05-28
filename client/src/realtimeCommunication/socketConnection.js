@@ -2,7 +2,7 @@ import io from 'socket.io-client'
 
 import store from '../store/store'
 import { addInvitation, addConversation, setConversations, setPendingInvitations, updateOnlineStatus } from '../store/actions/communication'
-import { addMessage } from '../store/actions/chat'
+import { addMessage, CHAT_TYPES } from '../store/actions/chat'
 let socket = null
 
 export const connectWithSocketServer = user => {
@@ -30,13 +30,19 @@ export const connectWithSocketServer = user => {
     })
 
     socket.on('invitation', data => {
-        store.dispatch(addInvitation(data))
+        const conversationType = data.recipients.length === 1 ? CHAT_TYPES.DIRECT : CHAT_TYPES.GROUP
+        store.dispatch(addInvitation(data, conversationType))
     })
 
-    socket.on('add-user', data => {
+    socket.on('add-conversation', conversation => {
+        const conversationType = conversation.isGroupConversation ? CHAT_TYPES.GROUP : CHAT_TYPES.DIRECT
         const userId = store.getState().auth.userDetails._id
-        const participant = data.participants.filter(x => x._id !== userId)
-        store.dispatch(addConversation({ ...data, participants: [{ ...participant[0], isOnline: true }] }))
+        const participants = conversation.participants.filter(x => x._id !== userId)
+        store.dispatch(addConversation({
+            ...conversation, 
+            participants: conversationType === CHAT_TYPES.DIRECT ? [{ ...participants[0], isOnline: true }] : participants 
+        },
+        conversationType))
     })
 
     socket.on('advertise-presence', ({ userId, advertisementType }) => {

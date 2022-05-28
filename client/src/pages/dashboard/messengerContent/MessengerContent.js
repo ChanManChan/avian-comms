@@ -1,5 +1,6 @@
 import React from "react"
 import { connect } from 'react-redux'
+import { commaSeparatedWithAnd } from "../../../shared/utils"
 import { getActions } from "../../../store/actions/chat"
 
 import MessageComponse from '../messageCompose/MessageCompose'
@@ -23,7 +24,7 @@ const MessengerContent = ({ chosenChatDetails, messages, removeLiveTag }) => {
             <div className="messengerHeader">
               <p>
                 This is the beginning of your conversation with{" "}
-                {chosenChatDetails.username}
+                {chosenChatDetails.username ?? commaSeparatedWithAnd(chosenChatDetails.groupName)}
               </p>
             </div>
             <Messages messages={messages} />

@@ -1,3 +1,4 @@
+import { CHAT_TYPES } from '../actions/chat'
 import { COMMUNICATION_ACTIONS } from '../actions/communication'
 
 const INITIAL_STATE = {
@@ -18,7 +19,7 @@ const reducer = (state = INITIAL_STATE, action) => {
         case COMMUNICATION_ACTIONS.ADD_INVITATION:
             return {
                 ...state,
-                ...(action.invitationType === 'group' ? 
+                ...(action.conversationType === CHAT_TYPES.GROUP ? 
                     { pendingGroupInvitations: [action.invitation, ...state.pendingGroupInvitations] }
                     :
                     { pendingDirectInvitations: [action.invitation, ...state.pendingDirectInvitations] })
@@ -26,7 +27,7 @@ const reducer = (state = INITIAL_STATE, action) => {
         case COMMUNICATION_ACTIONS.REMOVE_INVITATION:
             return {
                 ...state,
-                ...(action.invitationType === 'group' ?
+                ...(action.conversationType === CHAT_TYPES.GROUP ?
                     { pendingGroupInvitations: state.pendingGroupInvitations.filter(invitation => invitation._id !== action.invitationId) } 
                     :
                     { pendingDirectInvitations: state.pendingDirectInvitations.filter(invitation => invitation._id !== action.invitationId) })
@@ -40,7 +41,10 @@ const reducer = (state = INITIAL_STATE, action) => {
         case COMMUNICATION_ACTIONS.ADD_CONVERSATION:
             return {
                 ...state,
-                directConversations: [...state.directConversations, action.conversation]
+                ...(action.conversationType === CHAT_TYPES.GROUP ?
+                    { groupConversations: [...state.groupConversations.filter(x => x._id !== action.conversation._id), action.conversation] } 
+                    : 
+                    { directConversations: [...state.directConversations, action.conversation] })
             }
         case COMMUNICATION_ACTIONS.UPDATE_ONLINE_STATUS:
             return {

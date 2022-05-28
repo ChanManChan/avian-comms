@@ -2,13 +2,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Button from '../../../shared/components/button/Button'
-import { logout } from '../../../shared/utils'
+import { commaSeparatedWithAnd, logout } from '../../../shared/utils'
 import './Appbar.css'
 
-const Appbar = ({ username, signedInUser }) => {
+const Appbar = ({ username, groupName, signedInUser }) => {
     return (
         <header className='appbarContainer'>
-            <span>{username ? `Chosen coversation: ${username}`: `Signed-in as ${signedInUser}`}</span>
+            <span>{username || groupName ? `Chosen coversation: ${username ?? commaSeparatedWithAnd(groupName)}`: `Signed-in as ${signedInUser}`}</span>
             <Button text="Logout" className='logoutBtn' onClick={logout}>
                 <i className='fa-solid fa-arrow-right-from-bracket'></i>
             </Button>
@@ -18,6 +18,7 @@ const Appbar = ({ username, signedInUser }) => {
 
 const mapStateToProps = state => ({ 
     username: state.chat.chosenChatDetails?.username, 
+    groupName: state.chat.chosenChatDetails?.groupName,
     signedInUser: state.auth.userDetails?.username
 })
 

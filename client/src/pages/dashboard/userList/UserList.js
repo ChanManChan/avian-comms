@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 
 import FlatButton from '../../../shared/components/flatButton/FlatButton'
 import TextAvatar from '../../../shared/components/textAvatar/TextAvatar'
+import { commaSeparatedWithAnd } from '../../../shared/utils'
 import { CHAT_TYPES, getActions } from '../../../store/actions/chat'
 import './UserList.css'
 
@@ -22,7 +23,14 @@ const UserList = ({ directConversations = [], groupConversations = [], setChosen
                     </FlatButton>
                 ))
             ) : (
-                groupConversations.map(({ _id }) => _id)
+                groupConversations.map(({ _id: conversationId, conversationName, participants }) => {
+                    const groupName = commaSeparatedWithAnd(participants.map(({ username }) => username).join(', '))
+                    return (
+                        <FlatButton key={conversationId} text={conversationName ?? groupName} onClick={() => setActiveConversation({ groupName, conversationId }, CHAT_TYPES.GROUP)}>
+                            <TextAvatar text={conversationName ?? groupName} />
+                        </FlatButton>
+                    )
+                })
             )}
         </section>
     )

@@ -12,11 +12,13 @@ const InvitationList = ({ pendingDirectInvitations, pendingGroupInvitations, cha
     const [open, setOpen] = useState(false)
     const [invitation, setInvitation] = useState({})
 
-    const handleInviteAccept = (invitationId, senderId) => {
+    const handleInviteAccept = (e, invitationId, senderId) => {
+        e.stopPropagation()
         invitationAction({ action: 'accept', invitationId, senderId })
     }
 
-    const handleInviteReject = (invitationId, senderId) => {
+    const handleInviteReject = (e, invitationId, senderId) => {
+        e.stopPropagation()
         invitationAction({ action: 'reject', invitationId, senderId })
     }
 
@@ -26,10 +28,10 @@ const InvitationList = ({ pendingDirectInvitations, pendingGroupInvitations, cha
                 <FlatButton key={_id} text={senderId.username} onClick={() => {setOpen(true); setInvitation({ _id, senderId, recipients })}}>
                     <TextAvatar text={senderId.username} />
                     <aside style={{ whiteSpace: 'nowrap' }}>
-                        <span className='singleActionButton' onClick={() => handleInviteAccept(_id, senderId)}>
+                        <span className='singleActionButton' onClick={e => handleInviteAccept(e, _id, senderId)}>
                             <i className="fa-solid fa-check"></i>
                         </span>
-                        <span className='singleActionButton' onClick={() => handleInviteReject(_id, senderId)}>
+                        <span className='singleActionButton' onClick={e => handleInviteReject(e, _id, senderId)}>
                             <i className="fa-solid fa-xmark"></i>
                         </span>
                     </aside>

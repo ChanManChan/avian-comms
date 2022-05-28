@@ -67,16 +67,15 @@ const initialSync = async (userId, pendingInvitations, directChatUsers, userDeta
 }
 
 const sendInvitation = ({ recipients, senderId, _id }) => {
-    const receiverId = recipients[0].recipient
-    const receiverList = getActiveConnections(receiverId)
+    const receiverList = recipients.map(({ recipient }) => getActiveConnections(recipient._id)).flat()
     const io = getSocketServerInstance()
     receiverList.forEach(socketId => io.to(socketId).emit('invitation', { recipients, senderId, _id }))
 }
 
-const sendUserListUpdate = (senderId, conversation) => {
+const sendInvitationUpdateToSender = (senderId, conversation) => {
     const receiverList = getActiveConnections(senderId)
     const io = getSocketServerInstance()
-    receiverList.forEach(socketId => io.to(socketId).emit('add-user', conversation))
+    receiverList.forEach(socketId => io.to(socketId).emit('add-conversation', conversation))
 }
 
 const advertisePresence = (userId, directChatUsers) => {
@@ -124,4 +123,4 @@ const disconnectHandler = socket => {
     removeConnectedUser(socket.id)
 }
 
-module.exports = { registerSocketServer, sendInvitation, sendUserListUpdate }
+module.exports = { registerSocketServer, sendInvitation, sendInvitationUpdateToSender }

@@ -1,11 +1,12 @@
 const Invitation = require("../models/Invitation")
 const Conversation = require('../models/Conversation')
 const User = require("../models/User")
-const { sendInvitation, sendUserListUpdate } = require("../socketServer")
+const { sendInvitation, sendInvitationUpdateToSender } = require("../socketServer")
 
 const inviteUser = async (req, res) => {
     let { recipients } = req.body
     const { userId, mail } = req.user
+    let createdInvitation
 
     if (recipients.length > 1) {
         recipients = recipients.filter(x => x !== mail)
@@ -33,12 +34,7 @@ const inviteUser = async (req, res) => {
             return res.status(409).send('Already Acquainted')
         }
 
-        let createdInvitation = await Invitation.create({ senderId: userId, recipients: targetUsers.map(x => ({ recipient: x._id, status: 'Pending' })) })
-        createdInvitation = await createdInvitation.populate('senderId', '-password')
-
-        sendInvitation(createdInvitation)
-        
-        return res.status(200).json('Group invitation has been sent')
+        createdInvitation = await Invitation.create({ senderId: userId, recipients: targetUsers.map(x => ({ recipient: x._id, status: 'Pending' })) })
     } else {
         if (recipients.length === 1 && mail.toLowerCase() == recipients[0].toLowerCase()) {
             return res.status(409).send('Cannot send invitation to yourself')
@@ -62,12 +58,12 @@ const inviteUser = async (req, res) => {
             return res.status(409).send('Already Acquainted')
         }
     
-        let createdInvitation = await Invitation.create({ senderId: userId, recipients: [{ recipient: targetUser._id, status: 'Pending' }] })
-        createdInvitation = await createdInvitation.populate('senderId', '-password')
-        sendInvitation(createdInvitation)
-    
-        return res.status(201).send('Invitation has been sent')
+        createdInvitation = await Invitation.create({ senderId: userId, recipients: [{ recipient: targetUser._id, status: 'Pending' }] })
     }
+
+    createdInvitation = await createdInvitation.populate('senderId recipients.recipient', '-password -conversations')
+    sendInvitation(createdInvitation)
+    return res.status(200).send('Invitation has been sent')
 }
 
 const inviteAction = async (req, res) => {
@@ -80,32 +76,48 @@ const inviteAction = async (req, res) => {
     }
 
     const { senderId, recipients } = invitation
-
+    let conversationType = 'DIRECT'
+    
     if (action === 'reject') {
         if (recipients.length === 1) {
             await Invitation.findByIdAndDelete(invitationId)
-            return res.status(200).json({ message: 'Invitation successfully rejected' })
+            conversationType = 'DIRECT'
         } else {
             const { recipients } = await Invitation.findOneAndUpdate({ _id: invitationId, 'recipients.recipient': userId }, { $set: { 'recipients.$.status': 'Rejected' } }, { new: true })
             if (recipients.every(({ status }) => ['Accepted', 'Rejected'].includes(status))) {
                 await Invitation.findByIdAndDelete(invitationId)
             }
+            conversationType = 'GROUP'
         }
+        return res.status(200).json({ message: 'Invitation successfully rejected', conversationType })
     } else {
-         if (recipients.length === 1) {
-            let conversation = await Conversation.create({ participants: [senderId, userId], isGroupConversation: false })
-            conversation = await conversation.populate('participants', '-password -conversations')
+        let conversation
+        if (recipients.length === 1) {
+            conversation = await Conversation.create({ participants: [senderId, userId], isGroupConversation: false })
             await User.updateMany({ _id: { $in: [userId, senderId] } }, { $addToSet: { conversations: conversation._id } })
             await Invitation.findByIdAndDelete(invitationId)
-   
-            sendUserListUpdate(senderId, conversation)
-            return res.status(200).json({ conversation, message: 'Invitation successfully accepted' })
-         } else {
-            const { recipients } = await Invitation.findOneAndUpdate({ _id: invitationId, 'recipients.recipient': userId }, { $set: { 'recipients.$.status': 'Accepted' } }, { new: true })
+            conversationType = 'DIRECT'
+        } else {
+            const { _id, recipients } = await Invitation.findOneAndUpdate({ _id: invitationId, 'recipients.recipient': userId }, { $set: { 'recipients.$.status': 'Accepted' } }, { new: true })
+
+            if (recipients.filter(({ status }) => status === 'Accepted').length === 1) {
+                conversation = await Conversation.create({ _id, participants: [senderId, userId], isGroupConversation: true })
+                await User.updateMany({ _id: { $in: [userId, senderId] }}, { $addToSet: { conversations: conversation._id } })
+            } else {
+                conversation = await Conversation.findByIdAndUpdate(_id, { $addToSet: { participants: userId } }, { new: true })
+                await User.findByIdAndUpdate(userId, { $addToSet: { conversations: conversation._id } })
+            }
+
             if (recipients.every(({ status }) => ['Accepted', 'Rejected'].includes(status))) {
                 await Invitation.findByIdAndDelete(invitationId)
             }
-         }
+
+            conversationType = 'GROUP'
+        }
+
+        conversation = await conversation.populate('participants', '-password -conversations')
+        sendInvitationUpdateToSender(senderId, conversation)
+        return res.status(200).json({ actionBy: userId, conversation, message: 'Invitation successfully accepted', conversationType })
     }
 }
 

@@ -1,14 +1,15 @@
 import * as api from '../../api'
 import { showAlertMessage } from "./alert"
+import { CHAT_TYPES } from './chat'
 
 export const COMMUNICATION_ACTIONS = {
-    SET_PENDING_INVITATIONS: 'USERS.SET_PENDING_INVITATIONS',
-    ADD_INVITATION: 'USERS.ADD_INVITATION',
-    ADD_CONVERSATION: 'USERS.ADD_CONVERSATION',
-    UPDATE_ONLINE_STATUS: 'USERS.UPDATE_ONLINE_STATUS',
-    REMOVE_INVITATION: 'USERS.REMOVE_INVITATION',
-    SET_ONLINE_USERS: 'USERS.SET_ONLINE_USERS',
-    SET_CONVERSATIONS: 'USERS.SET_CONVERSATIONS'
+    SET_PENDING_INVITATIONS: 'COMMUNICATION.SET_PENDING_INVITATIONS',
+    ADD_INVITATION: 'COMMUNICATION.ADD_INVITATION',
+    ADD_CONVERSATION: 'COMMUNICATION.ADD_CONVERSATION',
+    UPDATE_ONLINE_STATUS: 'COMMUNICATION.UPDATE_ONLINE_STATUS',
+    REMOVE_INVITATION: 'COMMUNICATION.REMOVE_INVITATION',
+    SET_ONLINE_USERS: 'COMMUNICATION.SET_ONLINE_USERS',
+    SET_CONVERSATIONS: 'COMMUNICATION.SET_CONVERSATIONS'
 }
 
 export const getActions = dispatch => {
@@ -19,18 +20,21 @@ export const getActions = dispatch => {
 }
 
 const invitationAction = data => async dispatch => {
-    const senderId = data.senderId._id
     delete data.senderId
     const response = await api.invitationAction(data)
     if (response.error) {
         dispatch(showAlertMessage(response.exception.response.data))
     } else {
-        const { message, conversation } = response.data
+        const { actionBy, message, conversation, conversationType } = response.data
+
         dispatch(showAlertMessage(message))
-        dispatch(removeInvitation(data.invitationId))
+        dispatch(removeInvitation(data.invitationId, conversationType))
         if (data.action === 'accept') {
-            const participant = conversation.participants.find(x => x._id === senderId)
-            dispatch(addConversation({ ...conversation, participants: [{ ...participant, isOnline: false }] }))
+            const participants = conversation.participants.filter(x => x._id !== actionBy)
+            dispatch(addConversation({ 
+                ...conversation, 
+                participants: conversationType === CHAT_TYPES.DIRECT ? [{ ...participants[0], isOnline: false }] : participants
+             }, conversationType))
         }
     }
 }
@@ -62,17 +66,19 @@ export const setConversations = (directConversations, groupConversations) => {
     }
 }
 
-export const addInvitation = invitation => {
+export const addInvitation = (invitation, conversationType) => {
     return {
         type: COMMUNICATION_ACTIONS.ADD_INVITATION,
-        invitation
+        invitation,
+        conversationType
     }
 }
 
-export const addConversation = conversation => {
+export const addConversation = (conversation, conversationType) => {
     return {
         type: COMMUNICATION_ACTIONS.ADD_CONVERSATION,
-        conversation
+        conversation,
+        conversationType
     }
 }
 
@@ -84,10 +90,11 @@ export const updateOnlineStatus = (userId, isOnline) => {
     }
 }
 
-const removeInvitation = invitationId => {
+const removeInvitation = (invitationId, conversationType) => {
     return {
         type: COMMUNICATION_ACTIONS.REMOVE_INVITATION,
-        invitationId
+        invitationId,
+        conversationType
     }
 }
 
