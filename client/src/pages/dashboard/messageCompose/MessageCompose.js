@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 
-import { sendDirectMessage } from '../../../realtimeCommunication/socketConnection'
+import { sendMessage } from '../../../realtimeCommunication/socketConnection'
 import Input from "../../../shared/components/input/Input"
 import './MessageCompose.css'
 
@@ -10,7 +10,7 @@ const MessageCompose = ({ chosenChatDetails }) => {
 
     const handleSendMessage = () => {
         if (message.trim().length > 0) {
-            sendDirectMessage({ conversationId: chosenChatDetails.conversationId, content: message.trim() })
+            sendMessage({ conversationId: chosenChatDetails.conversationId, content: message.trim() })
             setMessage('')
         }
     }

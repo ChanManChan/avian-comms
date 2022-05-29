@@ -3,7 +3,8 @@ const Message = require("../models/Message")
 const fetchChatHistory = async (req, res) => {
     const { conversationId, pageNumber, pageSize } = req.query
 
-    const messages = await Message.find({ conversation: conversationId }, null, { sort: { createdAt: -1 }, skip: pageNumber * pageSize, limit: pageSize })
+    const messages = await Message
+                            .find({ conversation: conversationId }, null, { sort: { createdAt: -1 }, skip: pageNumber * pageSize, limit: pageSize })
                             .populate('author', '-password -conversations')
     // const conversation = await Conversation.findOne(
     //     { participants: { $all: [

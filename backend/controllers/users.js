@@ -1,7 +1,7 @@
 const Invitation = require("../models/Invitation")
 const Conversation = require('../models/Conversation')
 const User = require("../models/User")
-const { sendInvitation, sendInvitationUpdateToSender } = require("../socketServer")
+const { sendInvitation, sendInvitationUpdateToOthers } = require("../socketServer")
 
 const inviteUser = async (req, res) => {
     let { recipients } = req.body
@@ -116,7 +116,7 @@ const inviteAction = async (req, res) => {
         }
 
         conversation = await conversation.populate('participants', '-password -conversations')
-        sendInvitationUpdateToSender(senderId, conversation)
+        sendInvitationUpdateToOthers(senderId, conversation, conversationType, userId)
         return res.status(200).json({ actionBy: userId, conversation, message: 'Invitation successfully accepted', conversationType })
     }
 }

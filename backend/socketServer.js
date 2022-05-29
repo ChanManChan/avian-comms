@@ -49,8 +49,8 @@ const registerSocketServer = server => {
             receiverList.forEach(socketId => io.to(socketId).emit('advertise-presence', { userId: ackFrom, advertisementType: 'pulseIn' }))
         })
         
-        socket.on('direct-message', data => {
-            directMessageHandler(userId, data)
+        socket.on('live-message', data => {
+            liveMessageHandler(userId, data)
         })
 
         socket.on('disconnect', () => {
@@ -72,9 +72,16 @@ const sendInvitation = ({ recipients, senderId, _id }) => {
     receiverList.forEach(socketId => io.to(socketId).emit('invitation', { recipients, senderId, _id }))
 }
 
-const sendInvitationUpdateToSender = (senderId, conversation) => {
-    const receiverList = getActiveConnections(senderId)
+const sendInvitationUpdateToOthers = (senderId, conversation, conversationType, userId) => {
     const io = getSocketServerInstance()
+    let receiverList = []
+
+    if (conversationType === 'GROUP') {
+        receiverList = conversation.participants.map(({ _id }) => userId === _id ? [] : getActiveConnections(_id)).flat()
+    } else {
+        receiverList = getActiveConnections(senderId)
+    }
+
     receiverList.forEach(socketId => io.to(socketId).emit('add-conversation', conversation))
 }
 
@@ -90,7 +97,7 @@ const advertiseAbsence = (userId, directChatUsers) => {
     receiverList.forEach(socketId => io.to(socketId).emit('advertise-absence', userId))
 }
 
-const directMessageHandler = async (userId, data) => {
+const liveMessageHandler = async (userId, data) => {
     const { conversationId, content } = data
     let message = await Message.create({ content, author: userId, conversation: conversationId }).catch(e => console.error(e))
     message = await message.populate("author", "-password -conversations")
@@ -106,7 +113,7 @@ const updateChatHistory = (message, conversation) => {
     conversation.participants.forEach(participant => {
         const activeConnections = getActiveConnections(participant)
         activeConnections.forEach(socketId => {
-            io.to(socketId).emit("direct-message", {
+            io.to(socketId).emit("live-message", {
                 message,
                 conversation
             })
@@ -123,4 +130,4 @@ const disconnectHandler = socket => {
     removeConnectedUser(socket.id)
 }
 
-module.exports = { registerSocketServer, sendInvitation, sendInvitationUpdateToSender }
+module.exports = { registerSocketServer, sendInvitation, sendInvitationUpdateToOthers }

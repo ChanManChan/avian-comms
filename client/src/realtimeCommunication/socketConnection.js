@@ -56,12 +56,12 @@ export const connectWithSocketServer = user => {
         store.dispatch(updateOnlineStatus(data, false))
     })
 
-    socket.on('direct-message', data => {
+    socket.on('live-message', data => {
         const lastMessage = store.getState().chat.messages.at(-1)
         store.dispatch(addMessage(data, lastMessage))
     })
 }
 
-export const sendDirectMessage = data => {
-    socket.emit('direct-message', data)
+export const sendMessage = data => {
+    socket.emit('live-message', data)
 }
