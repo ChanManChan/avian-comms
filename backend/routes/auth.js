@@ -17,6 +17,9 @@ const loginSchema = Joi.object({
     mail: Joi.string().email().required()
 })
 
+router.get('/authenticate', verifyToken, (req, res) => {
+    res.status(200).json(req.user)
+})
 router.post('/register', validator.body(registerSchema), controllers.register)
 router.post('/login', validator.body(loginSchema), controllers.login)
 
