@@ -15,7 +15,14 @@ const invitationActionSchema = Joi.object({
     invitationId: Joi.string().required()
 })
 
+const updateProfileSchema = Joi.object({
+    username: Joi.string().min(3).max(12).optional(),
+    password: Joi.string().min(6).max(12).optional(),
+    profilePicture: Joi.string().optional()
+})
+
 router.post('/invite', verifyToken, validator.body(invitationSchema), controllers.inviteUser)
 router.put('/invite', verifyToken, validator.body(invitationActionSchema), controllers.inviteAction)
+router.patch('/update', verifyToken, validator.body(updateProfileSchema), controllers.updateProfile)
 
 module.exports = router

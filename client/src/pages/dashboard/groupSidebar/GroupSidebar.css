@@ -21,3 +21,33 @@
     box-shadow: 0px 0px 0px var(--dark);
     transform: scale(0.98);
 }
+
+.groupSidebarContainer .modalFrame h2 {
+    margin: unset;
+    margin-bottom: var(--spacing);
+}
+
+.groupSidebarContainer .modalFrame .inputWrapper {
+    margin-bottom: var(--spacing);
+}
+
+.groupSidebarContainer .modalFrame input[type="file"] {
+    display: block;
+    width: 100%;
+    margin-bottom: var(--spacing);
+}
+
+.groupSidebarContainer .modalFrame input[type="file"]::file-selector-button {
+    color: white;
+    background-color: var(--primary);
+    border: none;
+    outline: none;
+    padding: var(--spacing);
+    border-radius: var(--borderRadius);
+    cursor: pointer;
+}
+
+.groupSidebarContainer .modalFrame .genericButton {
+    display: block;
+    margin-left: auto;
+}

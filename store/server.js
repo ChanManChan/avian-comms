@@ -2,11 +2,13 @@ const express = require('express')
 const path = require("path")
 const fs = require('fs')
 const multer = require('multer')
+const cors = require('cors')
 const { verifyToken } = require('./middleware')
 
 require('dotenv').config()
 const upload = multer({ dest: "uploads/" })
 const app = express()
+app.use(cors())
 const port = process.env.SERVER_PORT
 
 app.post('/profile-picture', verifyToken, upload.single('file'), (req, res) => {
@@ -36,7 +38,10 @@ const fileUpload = (req, res, dir) => {
             console.error(error)
             return res.sendStatus(500)
         }
-        res.status(200).send('File uploaded successfully')
+        res.status(200).json({ 
+            message: 'File uploaded successfully', 
+            path: `/${dir}/${req.file.filename}${path.extname(req.file.originalname)}` 
+        })
     })
 }
 

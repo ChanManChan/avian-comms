@@ -121,7 +121,14 @@ const inviteAction = async (req, res) => {
     }
 }
 
+const updateProfile = (req, res) => {
+    const { username, password, profilePicture } = req.body
+    console.log(username, password, profilePicture)
+    res.sendStatus(200)
+}
+
 exports.controllers = {
     inviteUser,
-    inviteAction
+    inviteAction,
+    updateProfile
 }

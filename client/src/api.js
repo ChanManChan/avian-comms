@@ -2,19 +2,40 @@ import axios from 'axios'
 
 import { logout } from './shared/utils'
 
-const apiClient = axios.create({
-    baseURL: 'http://localhost:5000/api',
-    timeout: 1000
-})
+const SERVERS = {
+    FILE_SERVER: 'http://localhost:8080',
+    SOCKET_REST_SERVER: 'http://localhost:5000/api'
+}
 
-apiClient.interceptors.request.use(config => {
+const fetchToken = () => {
     const userDetails = localStorage.getItem("user")
     if (userDetails) {
         const token = JSON.parse(userDetails).token
-        config.headers.Authorization = `Bearer ${token}`
+        return `Bearer ${token}`
     }
-    return config
-}, err => Promise.reject(err))
+    return ''
+}
+
+axios.defaults.headers.common['Authorization'] = fetchToken()
+
+const apiClient = axios.create({
+    baseURL: SERVERS.SOCKET_REST_SERVER,
+    timeout: 1000
+})
+
+const fileServerClient = axios.create({
+    baseURL: SERVERS.FILE_SERVER,
+    timeout: 1000
+})
+
+// apiClient.interceptors.request.use(config => {
+//     const userDetails = localStorage.getItem("user")
+//     if (userDetails) {
+//         const token = JSON.parse(userDetails).token
+//         config.headers.Authorization = `Bearer ${token}`
+//     }
+//     return config
+// }, err => Promise.reject(err))
 
 export const login = async data => {
     return await apiClient.post('/auth/login', data).catch(e => ({ error: true, exception: e }))
@@ -42,6 +63,20 @@ export const invitationAction = async data => {
 export const fetchChatHistory = async ({ conversationId, pageSize, pageNumber }) => {
     return await apiClient.get('/communications/messages', { params: { conversationId, pageSize, pageNumber }})
     .catch(e => {
+        checkResponseCode(e)
+        return { error: true, exception: e }
+    })
+}
+
+export const updateProfile = async data => {
+    return await apiClient.patch('/users/update', data).catch(e => {
+        checkResponseCode(e)
+        return { error: true, exception: e }
+    })
+}
+
+export const uploadFile = async formData => {
+    return await fileServerClient.post('/profile-picture', formData).catch(e => {
         checkResponseCode(e)
         return { error: true, exception: e }
     })

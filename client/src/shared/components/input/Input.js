@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 
-import './Input.css'
 import { generateUUID } from '../../utils'
+import './Input.css'
 
 const Input = ({ 
     type = 'text', 
