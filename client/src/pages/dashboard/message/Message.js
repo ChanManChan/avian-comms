@@ -1,9 +1,9 @@
 import React from 'react'
 
-import TextAvatar from '../../../shared/components/textAvatar/TextAvatar'
+import Avatar from '../../../shared/components/avatar/Avatar'
 import './Message.css'
 
-const Message = React.forwardRef(({ message : { content, author: { username }, sameAuthor, createdAt, sameDay }}, ref) => {
+const Message = React.forwardRef(({ message : { content, author: { _id, username, profilePicture }, sameAuthor, createdAt, sameDay }}, ref) => {
     if (sameAuthor && sameDay) {
         return <span className='chainMessage'>{content}</span>
     }
@@ -18,7 +18,7 @@ const Message = React.forwardRef(({ message : { content, author: { username }, s
                 </div>
             )}
             <div className='initialMessageWrapper' ref={ref}>
-                <TextAvatar text={username} />
+                <Avatar content={(!profilePicture || profilePicture.includes('default.png')) ? username : `http://localhost:8080/uploads/${_id}/${profilePicture}`} tertiary />
                 <div className='initialMessage'>
                     <p><strong>{username}</strong></p>
                     <span>{content}</span>

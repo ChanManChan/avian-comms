@@ -7,16 +7,16 @@ const SERVERS = {
     SOCKET_REST_SERVER: 'http://localhost:5000/api'
 }
 
-const fetchToken = () => {
+const setToken = config => {
     const userDetails = localStorage.getItem("user")
     if (userDetails) {
         const token = JSON.parse(userDetails).token
-        return `Bearer ${token}`
+        config.headers.Authorization = `Bearer ${token}`
     }
-    return ''
+    return config
 }
 
-axios.defaults.headers.common['Authorization'] = fetchToken()
+// axios.defaults.headers.common['Authorization'] = fetchToken()
 
 const apiClient = axios.create({
     baseURL: SERVERS.SOCKET_REST_SERVER,
@@ -28,14 +28,8 @@ const fileServerClient = axios.create({
     timeout: 1000
 })
 
-// apiClient.interceptors.request.use(config => {
-//     const userDetails = localStorage.getItem("user")
-//     if (userDetails) {
-//         const token = JSON.parse(userDetails).token
-//         config.headers.Authorization = `Bearer ${token}`
-//     }
-//     return config
-// }, err => Promise.reject(err))
+apiClient.interceptors.request.use(config => setToken(config), err => Promise.reject(err))
+fileServerClient.interceptors.request.use(config => setToken(config), err => Promise.reject(err))
 
 export const login = async data => {
     return await apiClient.post('/auth/login', data).catch(e => ({ error: true, exception: e }))
@@ -75,8 +69,8 @@ export const updateProfile = async data => {
     })
 }
 
-export const uploadFile = async formData => {
-    return await fileServerClient.post('/profile-picture', formData).catch(e => {
+export const uploadFile = async (formData, endpoint) => {
+    return await fileServerClient.post(`/${endpoint}`, formData).catch(e => {
         checkResponseCode(e)
         return { error: true, exception: e }
     })

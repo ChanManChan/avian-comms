@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, connect } from 'react-redux'
 
 import Modal from '../../../shared/components/modal/Modal'
 import Input from '../../../shared/components/input/Input'
 import Button from '../../../shared/components/button/Button'
 import { CHAT_ACTIONS, CHAT_TYPES } from '../../../store/actions/chat'
-import { updateProfile, uploadFile } from '../../../api'
 import { validatePassword, validateUsername, entityToChar } from '../../../shared/utils'
+import { getActions } from '../../../store/actions/auth'
 import './GroupSidebar.css'
 
-const GroupSidebar = () => {
+const GroupSidebar = ({ updateProfile }) => {
     const dispatch = useDispatch()
     const [open, setOpen] = useState(false)
     const [username, setUsername] = useState('')
@@ -70,22 +70,13 @@ const GroupSidebar = () => {
         )
     }
 
-    const handleProfileUpdate = async () => {
+    const handleCloseDialog = () => {
+        setOpen(false)
+    }
+
+    const handleProfileUpdate = () => {
         if (isFormValid) {
-            let path = ''
-            if (file) {
-                const formData = new FormData()
-                formData.append('file', file)
-                const response = await uploadFile(formData)
-                if (!response.error) {
-                    path = response.data.path
-                }
-            }
-            const data = {}
-            Object.assign(data, username && { username })
-            Object.assign(data, password && { password })
-            Object.assign(data, path && { profilePicture: path })
-            await updateProfile(data)
+            updateProfile(username, password, file, handleCloseDialog)
         }
     }
 
@@ -117,4 +108,6 @@ const GroupSidebar = () => {
     )
 }
 
-export default GroupSidebar
+const mapActionsToProps = dispatch => ({ ...getActions(dispatch) })
+
+export default connect(null, mapActionsToProps)(GroupSidebar)

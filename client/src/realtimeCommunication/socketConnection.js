@@ -16,7 +16,7 @@ export const connectWithSocketServer = user => {
         console.log('successfully connected with socket.io server ', socket.id)
     })
 
-    socket.on('initial-sync', ({ users, pendingInvitations, userDetails }) => {
+    socket.on('initial-sync', ({ pendingInvitations, userDetails }) => {
         const directConversations = []
         const groupConversations = []
         userDetails.conversations.forEach(x => {

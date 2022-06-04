@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs')
 const Invitation = require("../models/Invitation")
 const Conversation = require('../models/Conversation')
 const User = require("../models/User")
@@ -121,10 +122,22 @@ const inviteAction = async (req, res) => {
     }
 }
 
-const updateProfile = (req, res) => {
+const updateProfile = async (req, res) => {
+    const { userId } = req.user
     const { username, password, profilePicture } = req.body
-    console.log(username, password, profilePicture)
-    res.sendStatus(200)
+    let encryptedPassword
+
+    if (password) {
+        encryptedPassword = await bcrypt.hash(password, 10)
+    }
+    
+    const data = {}
+    Object.assign(data, username && { username })
+    Object.assign(data, password && { password: encryptedPassword })
+    Object.assign(data, profilePicture && { profilePicture })
+    const updatedUser = await User.findByIdAndUpdate(userId, data, { new: true }).select('-password -conversations')
+    
+    res.status(200).json(updatedUser)
 }
 
 exports.controllers = {

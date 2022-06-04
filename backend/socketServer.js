@@ -63,7 +63,7 @@ const registerSocketServer = server => {
 const initialSync = async (userId, pendingInvitations, directChatUsers, userDetails, socket) => {
     // const users = await User.find({ _id: { $in: directChatUsers }}).select('-password')
     advertisePresence(userId, directChatUsers)
-    socket.emit('initial-sync', { pendingInvitations, users: directChatUsers, userDetails })
+    socket.emit('initial-sync', { pendingInvitations, userDetails })
 }
 
 const sendInvitation = ({ recipients, senderId, _id }) => {

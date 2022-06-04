@@ -6,7 +6,7 @@ const Button = ({ text, onClick, disabled, disabledText, secondary = false, chil
     return (
         <button className={`genericButton${secondary ? ' secondary' : ''} ${className}`} onClick={onClick} disabled={disabled} data-disabledtext={disabledText}>
             {text}
-            {children && <span style={{ marginLeft: '8px' }}>{children}</span>}
+            {children && <span style={text ? { marginLeft: '8px' } : {}}>{children}</span>}
         </button>
     )
 }

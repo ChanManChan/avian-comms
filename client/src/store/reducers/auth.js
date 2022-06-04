@@ -11,6 +11,14 @@ const reducer = (state = INITIAL_STATE, action) => {
                 ...state,
                 userDetails: action.userDetails
             }
+        case AUTH_ACTIONS.UPDATE_USER_DETAILS:
+            return {
+                ...state,
+                userDetails: {
+                    ...state.userDetails,
+                    ...action.updatedUserData
+                }
+            }
         default:
             return state
     }
