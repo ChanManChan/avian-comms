@@ -69,7 +69,7 @@ export const updateProfile = async data => {
     })
 }
 
-export const uploadFile = async (formData, endpoint) => {
+export const uploadFiles = async (formData, endpoint) => {
     return await fileServerClient.post(`/${endpoint}`, formData).catch(e => {
         checkResponseCode(e)
         return { error: true, exception: e }

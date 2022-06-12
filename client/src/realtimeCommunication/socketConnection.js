@@ -2,6 +2,7 @@ import io from 'socket.io-client'
 
 import store from '../store/store'
 import { addInvitation, addConversation, setConversations, setPendingInvitations, updateOnlineStatus } from '../store/actions/communication'
+import * as api from '../api'
 import { addMessage, CHAT_TYPES } from '../store/actions/chat'
 let socket = null
 
@@ -62,6 +63,18 @@ export const connectWithSocketServer = user => {
     })
 }
 
-export const sendMessage = data => {
+export const sendMessage = async data => {
+    let paths = []
+    
+    if (data.media?.length > 0) {
+        const formData = new FormData()
+        data.media.forEach(file => formData.append('file', file))
+        const response = await api.uploadFiles(formData, 'media')
+        if (!response.error && response.data?.length > 0) {
+            paths = response.data.map(x => x.path)
+        }
+    }
+
+    data.media = paths
     socket.emit('live-message', data)
 }

@@ -16,3 +16,47 @@
     border-radius: unset;
     padding: 0 30px;
 }
+
+.uploadedFilesContainer {
+    display: flex;
+    flex-flow: row wrap;
+    padding: var(--spacing);
+    background-color: var(--primaryLight);
+}
+
+.uploadedFilesContainer .imagePreviewContainer {
+    position: relative;
+}
+
+.uploadedFilesContainer .imagePreviewContainer button {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease-out;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.uploadedFilesContainer .imagePreviewContainer:hover button {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.uploadedFilesContainer .imagePreviewContainer {
+    width: 100px;
+    height: 100px;
+}
+
+.uploadedFilesContainer .imagePreviewContainer img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--borderRadius);
+}
+
+.uploadedFilesContainer .imagePreviewContainer:not(:last-child) {
+    margin-right: 10px;
+}

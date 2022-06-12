@@ -58,7 +58,7 @@ const updateProfile = (username, password, file, closeModal) => async dispatch =
     if (file) {
         const formData = new FormData()
         formData.append('file', file)
-        const response = await api.uploadFile(formData, 'profile-picture')
+        const response = await api.uploadFiles(formData, 'profile-picture')
         if (!response.error) {
             path = response.data.path
         }
