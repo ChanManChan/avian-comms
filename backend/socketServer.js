@@ -97,9 +97,13 @@ const advertiseAbsence = (userId, directChatUsers) => {
     receiverList.forEach(socketId => io.to(socketId).emit('advertise-absence', userId))
 }
 
-const liveMessageHandler = async (userId, data) => {
-    const { conversationId, content } = data
-    let message = await Message.create({ content, author: userId, conversation: conversationId }).catch(e => console.error(e))
+const liveMessageHandler = async (userId, { conversationId, content, media }) => {
+    const data = { author: userId }
+    Object.assign(data, conversationId && { conversation: conversationId })
+    Object.assign(data, content && { content })
+    Object.assign(data, media?.length > 0 && { media })
+
+    let message = await Message.create(data).catch(e => console.error(e))
     message = await message.populate("author", "-password -conversations")
     const conversation = await Conversation
                         .findByIdAndUpdate(conversationId, { lastMessage: message._id }, { new: true })

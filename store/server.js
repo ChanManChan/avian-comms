@@ -12,37 +12,46 @@ app.use(cors())
 const port = process.env.SERVER_PORT
 
 app.post('/profile-picture', verifyToken, upload.single('file'), (req, res) => {
-    fileUpload(req, res, 'profile-picture')
-})
-
-app.post('/media', verifyToken, upload.single('file'), (req, res) => {
-    fileUpload(req, res, 'media')
-})
-
-const fileUpload = (req, res, dir) => {
     if (!req.file) {
         return res.status(400).send('No file uploaded with ajax request')
     }
-    
-    const parentDir = `./uploads/${req.user.userId}/${dir}`
+
+    fileUpload([req.file], req.user, res, 'profile-picture')
+})
+
+app.post('/media', verifyToken, upload.array('file'), (req, res) => {
+    if (!req.files) {
+        return res.status(400).send('No file(s) uploaded with ajax request')
+    }
+
+    fileUpload(req.files, req.user, res, 'media')
+})
+
+const fileUpload = (files = [], user, res, dir) => {
+    const parentDir = `./uploads/${user.userId}/${dir}`
 
     if (!fs.existsSync(parentDir)) {
         fs.mkdirSync(parentDir, { recursive: true, })
     }
 
-    const filePath = `${parentDir}/${req.file.filename}${path.extname(req.file.originalname)}`
-    const tempPath = req.file.path
-    const targetPath = path.join(__dirname, filePath)
-    fs.rename(tempPath, targetPath, async error => {
-        if (error != null) {
-            console.error(error)
-            return res.sendStatus(500)
+    const responseList = []
+
+    files.forEach(file => {
+        const filePath = `${parentDir}/${file.filename}${path.extname(file.originalname)}`
+        const tempPath = file.path
+        const targetPath = path.join(__dirname, filePath)
+        const localPath = `/${dir}/${file.filename}${path.extname(file.originalname)}`
+
+        try {
+            fs.renameSync(tempPath, targetPath)
+            responseList.push({ message: 'File uploaded successfully', path: localPath })
+        } catch (e) {
+            console.error(e)
+            responseList.push({ message: 'File upload failed', path: localPath })
         }
-        res.status(200).json({ 
-            message: 'File uploaded successfully', 
-            path: `/${dir}/${req.file.filename}${path.extname(req.file.originalname)}` 
-        })
     })
+    
+    res.status(200).json(responseList)
 }
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
