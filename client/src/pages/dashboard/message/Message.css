@@ -14,9 +14,12 @@
     margin-bottom: 5px;
 }
 
+.initialMessageWrapper .pictureAvatarWrapper {
+    align-self: flex-start;
+}
+
 .messagesContainer .chainMessage {
     display: block;
-    margin-left: 57px;
     margin-top: 3px;
 }
 
@@ -31,4 +34,30 @@
     flex-grow: 1;
     margin: 0 var(--spacing);
     color: inherit;
+}
+
+.messagesContainer .messageContent.chainMessageContainer {
+    margin-left: 57px;
+}
+
+.messagesContainer .messageContent .mediaContainer {
+    display: flex;
+    flex-flow: row wrap;
+    width: fit-content;
+    margin: 8px 0;
+    background-color: var(--lightGrey);
+    padding-top: var(--spacing);
+    padding-left: var(--spacing);
+    border-radius: var(--borderRadius);
+}
+
+.messagesContainer .messageContent .mediaContainer > * {
+    margin-right: var(--spacing);
+    margin-bottom: var(--spacing);
+    width: 300px;
+    height: 300px;
+    border-radius: var(--borderRadius);
+    object-fit: cover;
+    user-select: none;
+    -webkit-user-drag: none;
 }

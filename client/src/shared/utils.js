@@ -1,3 +1,6 @@
+export const imageFormats = ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'png', 'svg', 'ico', 'apng']
+export const videoFormats = ['mp4', 'webm', 'ogv']
+
 export const generateUUID = characters => {
     const str = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVXZ'
     const uuid = []

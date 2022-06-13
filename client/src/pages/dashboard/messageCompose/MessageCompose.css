@@ -50,7 +50,9 @@
     height: 100px;
 }
 
-.uploadedFilesContainer .imagePreviewContainer img {
+.uploadedFilesContainer .imagePreviewContainer img,
+.uploadedFilesContainer .imagePreviewContainer video {
+    pointer-events: none;
     object-fit: cover;
     width: 100%;
     height: 100%;
