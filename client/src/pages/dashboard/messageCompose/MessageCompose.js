@@ -5,10 +5,11 @@ import { sendMessage } from '../../../realtimeCommunication/socketConnection'
 import Button from '../../../shared/components/button/Button'
 import Input from "../../../shared/components/input/Input"
 import { getActions } from '../../../store/actions/alert'
+import { getActions as roomActions } from '../../../store/actions/room'
 import { imageFormats, videoFormats } from '../../../shared/utils'
 import './MessageCompose.css'
 
-const MessageCompose = ({ chosenChatDetails, showAlertMessage }) => {
+const MessageCompose = ({ chosenChatDetails, showAlertMessage, setOpenRoom, isRoomMinimized, isUserInRoom, toggleWindowResize }) => {
     const [message, setMessage] = useState('')
     const [files, setFiles] = useState([])
     const [isFormValid, setIsFormValid] = useState(false)
@@ -84,6 +85,16 @@ const MessageCompose = ({ chosenChatDetails, showAlertMessage }) => {
         setFiles(localFiles)
     }
 
+    const handleRoomOperations = () => {
+        if (isUserInRoom) {
+            if (isRoomMinimized) {
+                toggleWindowResize()
+            }
+        } else {
+            setOpenRoom(true, true)
+        }
+    }
+
     return (
         <>
             {files.length > 0 && (
@@ -112,6 +123,9 @@ const MessageCompose = ({ chosenChatDetails, showAlertMessage }) => {
                 onChange={setMessage} 
                 placeholder={`Write message to ${chosenChatDetails.username}`}
                 handleKeyDown={handleKeyDown} />
+                <Button onClick={handleRoomOperations}>
+                    {isRoomMinimized ? <i className="fa-solid fa-phone-volume"></i> : <i className="fa-solid fa-phone"></i>}
+                </Button>
                 <Button onClick={handleAttachment}>
                     <i className="fa-solid fa-paperclip"></i>
                 </Button>
@@ -123,7 +137,7 @@ const MessageCompose = ({ chosenChatDetails, showAlertMessage }) => {
     )
 }
 
-const mapStateToProps = store => ({ ...store.chat })
-const mapActionsToProps = dispatch => ({ ...getActions(dispatch) })
+const mapStateToProps = store => ({ ...store.chat, ...store.room })
+const mapActionsToProps = dispatch => ({ ...getActions(dispatch), ...roomActions(dispatch) })
 
 export default connect(mapStateToProps, mapActionsToProps)(MessageCompose)

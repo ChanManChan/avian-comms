@@ -8,9 +8,10 @@ import { logout } from '../../shared/utils'
 import { getActions } from '../../store/actions/auth'
 import { connectWithSocketServer } from '../../realtimeCommunication/socketConnection'
 import MessengerContent from './messengerContent/MessengerContent'
+import Room from "./room/Room";
 import './Dashboard.css'
 
-const DashboardPage = ({ setUserDetails }) => {
+const DashboardPage = ({ setUserDetails, isUserInRoom }) => {
     
     useEffect(() => {
         const userDetails = localStorage.getItem('user')
@@ -31,10 +32,13 @@ const DashboardPage = ({ setUserDetails }) => {
                 <Appbar />
                 <MessengerContent />
             </section>
+            {isUserInRoom && <Room />}
         </div>
     )
 }
 
+const mapStateToProps = state => ({ ...state.room })
+
 const mapActionsToProps = dispatch => ({ ...getActions(dispatch) })
 
-export default connect(null, mapActionsToProps)(DashboardPage)
+export default connect(mapStateToProps, mapActionsToProps)(DashboardPage)

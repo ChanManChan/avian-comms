@@ -1,0 +1,10 @@
+.callsContainer {
+    /*display: flex;*/
+    /*flex-flow: row wrap;*/
+    /*width: 100%;*/
+    /*height: 100%;*/
+    /*flex: 1;*/
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(1000px, 1fr));
+    grid-gap: 5px;
+}

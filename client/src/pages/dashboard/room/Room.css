@@ -1,0 +1,65 @@
+.roomContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: var(--primaryLight);
+    z-index: 1;
+    opacity: 1;
+    padding: var(--spacing);
+    transition: all 0.2s ease-out;
+}
+
+.roomContainer.minimized {
+    top: 100%;
+    left: 90%;
+    right: 5%;
+    bottom: 5%;
+    opacity: 0;
+}
+
+.roomContainer .windowButtonContainer {
+    position: absolute;
+    top: var(--spacing);
+    right: var(--spacing);
+}
+
+.roomContainer .windowButtonContainer button:first-child {
+    margin-right: var(--spacing);
+}
+
+.roomContainer .windowButtonContainer button {
+    border-radius: unset;
+    padding: var(--spacing) 20px;
+    font-size: 16px;
+}
+
+.roomContainer.minimized .buttonContainer {
+    pointer-events: none;
+}
+
+.roomContainer .buttonContainer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    background-color: var(--lightGrey);
+    padding: var(--spacing);
+    box-shadow: 0 0 5px var(--dark);
+}
+
+.roomContainer .buttonContainer button {
+    border-radius: unset;
+    padding: 20px;
+    width: 80px;
+    height: 50px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.roomContainer .buttonContainer button:not(:last-child) {
+    margin-right: var(--spacing);
+}
