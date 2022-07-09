@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import Button from "../../../shared/components/button/Button"
 import { getActions } from "../../../store/actions/room"
-import CallsContainer from "../callsContainer/CallsContainer"
+import ConferenceContainer from "../conferenceContainer/ConferenceContainer"
 import './Room.css'
 
 const Room = ({ toggleWindowResize, isRoomMinimized, destroyRoom }) => {
@@ -17,7 +17,7 @@ const Room = ({ toggleWindowResize, isRoomMinimized, destroyRoom }) => {
                     <i className="fa-solid fa-xmark"></i>
                 </Button>
             </div>
-            <CallsContainer />
+            <ConferenceContainer />
             <div className="buttonContainer">
                 <Button><i className="fa-solid fa-microphone"></i></Button>
                 <Button><i className="fa-solid fa-video"></i></Button>
