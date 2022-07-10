@@ -1,6 +1,7 @@
 .dashboardContainer {
     display: flex;
     height: 100%;
+    position: relative;
 }
 
 .dashboardContainer .chatContainer {
@@ -8,4 +9,28 @@
     background-color: white;
     display: flex;
     flex-direction: column;
+}
+
+.dashboardContainer .callActionWindow {
+    padding: var(--spacing);
+    width: 350px;
+    position: absolute;
+    right: var(--spacing);
+    bottom: 75px;
+    border-radius: var(--borderRadius);
+    background-color: var(--lightGrey);
+    box-shadow: var(--wrapperBoxShadow);
+}
+
+.dashboardContainer .callActionWindow h4 {
+    word-break: break-word;
+}
+
+.dashboardContainer .callActionWindow .genericButton.acceptButton {
+    background-color: var(--green);
+}
+
+.dashboardContainer .callActionWindow .genericButton {
+    border-radius: unset;
+    width: 50%;
 }

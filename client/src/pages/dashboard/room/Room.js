@@ -1,27 +1,55 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { connect } from 'react-redux'
 
 import Button from "../../../shared/components/button/Button"
 import { getActions } from "../../../store/actions/room"
 import ConferenceContainer from "../conferenceContainer/ConferenceContainer"
+import {leaveRoom} from "../../../realtimeCommunication/socketConnection";
 import './Room.css'
 
-const Room = ({ toggleWindowResize, isRoomMinimized, destroyRoom }) => {
+const Room = ({ toggleWindowResize, isRoomMinimized, destroyRoom, roomDetails }) => {
+    const [cameraEnabled, setCameraEnabled] = useState(false)
+    const [microphoneEnabled, setMicrophoneEnabled] = useState(false)
+    const [screenShareEnabled, setScreenShareEnabled] = useState(false)
+
+    const handleCameraToggle = () => {
+        setCameraEnabled(x => !x)
+    }
+
+    const handleMicrophoneEnabled = () => {
+        setMicrophoneEnabled(x => !x)
+    }
+
+    const handleScreenShareEnabled = () => {
+        setScreenShareEnabled(x => !x)
+    }
+
+    const handleLeaveRoom = () => {
+        leaveRoom(roomDetails.roomId)
+        destroyRoom()
+    }
+
     return (
         <div className={`roomContainer${isRoomMinimized ? ' minimized' : ''}`}>
             <div className="windowButtonContainer">
                 <Button onClick={toggleWindowResize} secondary>
                     <i className="fa-solid fa-window-minimize"></i>
                 </Button>
-                <Button onClick={destroyRoom}>
+                <Button onClick={handleLeaveRoom}>
                     <i className="fa-solid fa-xmark"></i>
                 </Button>
             </div>
             <ConferenceContainer />
             <div className="buttonContainer">
-                <Button><i className="fa-solid fa-microphone"></i></Button>
-                <Button><i className="fa-solid fa-video"></i></Button>
-                <Button><i className="fa-solid fa-display"></i></Button>
+                <Button onClick={handleMicrophoneEnabled}>
+                    {microphoneEnabled ? <i className="fa-solid fa-microphone"></i> : <i className="fa-solid fa-microphone-slash"></i>}
+                </Button>
+                <Button onClick={handleCameraToggle}>
+                    {cameraEnabled ? <i className="fa-solid fa-video"></i> : <i className="fa-solid fa-video-slash"></i>}
+                </Button>
+                <Button onClick={handleScreenShareEnabled}>
+                    {screenShareEnabled ? <i className="fa-brands fa-chromecast"></i> : <i className="fa-solid fa-display"></i> }
+                </Button>
             </div>
         </div>
     )

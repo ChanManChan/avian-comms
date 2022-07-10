@@ -9,10 +9,12 @@ import { getActions } from '../../store/actions/auth'
 import { connectWithSocketServer } from '../../realtimeCommunication/socketConnection'
 import MessengerContent from './messengerContent/MessengerContent'
 import Room from "./room/Room";
+import { ROOM_ACTIONS } from "../../store/actions/room";
+import Button from "../../shared/components/button/Button";
 import './Dashboard.css'
 
-const DashboardPage = ({ setUserDetails, isUserInRoom }) => {
-    
+const DashboardPage = ({ setUserDetails, isUserInRoom, incomingCallStatus, roomDetails }) => {
+
     useEffect(() => {
         const userDetails = localStorage.getItem('user')
         if (!userDetails) {
@@ -33,6 +35,13 @@ const DashboardPage = ({ setUserDetails, isUserInRoom }) => {
                 <MessengerContent />
             </section>
             {isUserInRoom && <Room />}
+            {incomingCallStatus === ROOM_ACTIONS.CALL_AWAITING_ACTION && (
+                <div className='callActionWindow'>
+                    <h4>Incoming call from {roomDetails.roomCreator.username}</h4>
+                    <Button text='Accept' className='acceptButton' />
+                    <Button text='Reject' />
+                </div>
+            )}
         </div>
     )
 }

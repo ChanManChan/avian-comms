@@ -62,3 +62,16 @@
 .uploadedFilesContainer .imagePreviewContainer:not(:last-child) {
     margin-right: 10px;
 }
+
+.messageComposeModal > h2 {
+    margin: unset;
+    color: var(--dark);
+}
+
+.messageComposeModal > div {
+    text-align: end;
+}
+
+.messageComposeModal > div .genericButton:first-child {
+    margin-right: var(--spacing);
+}

@@ -7,6 +7,17 @@
     padding: 0 var(--spacing);
 }
 
+.dashboardContainer .chatContainer .appbarContainer .appbarAside .signedInUsername {
+    margin-right: var(--spacing);
+}
+
+.dashboardContainer .chatContainer .appbarContainer .appbarAside .signedInUsername strong,
+.dashboardContainer .chatContainer .appbarContainer .chosenConversationName strong {
+    color: var(--primaryDark);
+    font-size: 18px;
+    text-decoration: underline;
+}
+
 .appbarContainer .logoutBtn {
   padding: 10px;
   font-size: 14px;

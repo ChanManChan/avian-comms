@@ -2,8 +2,10 @@ import io from 'socket.io-client'
 
 import store from '../store/store'
 import { addInvitation, addConversation, setConversations, setPendingInvitations, updateOnlineStatus } from '../store/actions/communication'
-import * as api from '../api'
 import { addMessage, CHAT_TYPES } from '../store/actions/chat'
+import { setRoomDetails } from "../store/actions/room";
+import * as api from '../api'
+
 let socket = null
 
 export const connectWithSocketServer = user => {
@@ -61,6 +63,11 @@ export const connectWithSocketServer = user => {
         const lastMessage = store.getState().chat.messages.at(-1)
         store.dispatch(addMessage(data, lastMessage))
     })
+
+    socket.on('room-create', data => {
+        const userId = store.getState().auth.userDetails._id
+        store.dispatch(setRoomDetails(data, userId))
+    })
 }
 
 export const sendMessage = async data => {
@@ -77,4 +84,12 @@ export const sendMessage = async data => {
 
     data.media = paths
     socket.emit('live-message', data)
+}
+
+export const createNewRoom = conversationId => {
+    socket.emit('room-create', { conversationId })
+}
+
+export const leaveRoom = roomId => {
+    socket.emit('leave-room', { roomId })
 }

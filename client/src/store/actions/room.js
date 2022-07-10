@@ -6,6 +6,9 @@ export const ROOM_ACTIONS = {
     SET_ACTIVE_ROOMS: 'ROOM.SET_ACTIVE_ROOMS',
     SET_LOCAL_STREAM: 'ROOM.SET_LOCAL_STREAM',
     SET_ROOM_STREAMS: 'ROOM.SET_ROOM_STREAMS',
+    ACCEPT_INCOMING_CALL: 'ROOM.ACCEPT_INCOMING_CALL',
+    REJECT_INCOMING_CALL: 'ROOM.REJECT_INCOMING_CALL',
+    CALL_AWAITING_ACTION: 'ROOM.CALL_AWAITING_ACTION',
     SET_AUDIO_ONLY: 'ROOM.SET_AUDIO_ONLY',
     SET_SCREEN_SHARE_STREAM: 'ROOM.SCREEN_SHARE_STREAM'
 }
@@ -35,5 +38,14 @@ const setOpenRoom = (isUserRoomCreator = false, isUserInRoom = false) => {
 const destroyRoom = () => {
     return {
         type: ROOM_ACTIONS.DESTROY_ROOM
+    }
+}
+
+export const setRoomDetails = ({ roomDetails }, userId) => {
+    const roomCreatorId = roomDetails.roomCreator.userId
+    return {
+        type: ROOM_ACTIONS.SET_ROOM_DETAILS,
+        incomingCallStatus:  roomCreatorId !== userId ? ROOM_ACTIONS.CALL_AWAITING_ACTION : 'NA',
+        roomDetails,
     }
 }

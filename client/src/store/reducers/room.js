@@ -10,7 +10,8 @@ const INITIAL_STATE = {
     remoteStreams: [],
     audioOnly: false,
     screenSharingStream: null,
-    isScreenSharingActive: false
+    isScreenSharingActive: false,
+    incomingCallStatus: "NA"
 }
 
 const reducer = (state = INITIAL_STATE, action) => {
@@ -25,6 +26,12 @@ const reducer = (state = INITIAL_STATE, action) => {
             return {
                 ...state,
                 isRoomMinimized: !state.isRoomMinimized
+            }
+        case ROOM_ACTIONS.SET_ROOM_DETAILS:
+            return {
+                ...state,
+                roomDetails: action.roomDetails,
+                incomingCallStatus: action.incomingCallStatus
             }
         case ROOM_ACTIONS.DESTROY_ROOM:
             return INITIAL_STATE

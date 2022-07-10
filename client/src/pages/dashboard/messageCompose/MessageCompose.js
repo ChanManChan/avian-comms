@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 
-import { sendMessage } from '../../../realtimeCommunication/socketConnection'
+import { sendMessage, createNewRoom, leaveRoom } from '../../../realtimeCommunication/socketConnection'
 import Button from '../../../shared/components/button/Button'
 import Input from "../../../shared/components/input/Input"
 import { getActions } from '../../../store/actions/alert'
 import { getActions as roomActions } from '../../../store/actions/room'
 import { imageFormats, videoFormats } from '../../../shared/utils'
+import Modal from "../../../shared/components/modal/Modal";
 import './MessageCompose.css'
 
-const MessageCompose = ({ chosenChatDetails, showAlertMessage, setOpenRoom, isRoomMinimized, isUserInRoom, toggleWindowResize }) => {
+const MessageCompose = ({ chosenChatDetails, showAlertMessage, setOpenRoom, destroyRoom, isRoomMinimized, roomDetails, isUserInRoom, toggleWindowResize }) => {
     const [message, setMessage] = useState('')
     const [files, setFiles] = useState([])
     const [isFormValid, setIsFormValid] = useState(false)
+    const [open, setOpen] = useState(false)
 
     useEffect(() => {
         if (message.trim().length > 0 || files.length > 0) {
@@ -62,7 +64,6 @@ const MessageCompose = ({ chosenChatDetails, showAlertMessage, setOpenRoom, isRo
                 for (const file of files) {
                     if ((file.type.startsWith('image') || file.type.startsWith('video')) && file.size <= maxAllowedFileSize) {
                         const objectUrl = await filePromise(file)
-                        console.log(file)
                         filesWithObjectUrls.push({
                             objectUrl,
                             file
@@ -86,17 +87,35 @@ const MessageCompose = ({ chosenChatDetails, showAlertMessage, setOpenRoom, isRo
     }
 
     const handleRoomOperations = () => {
-        if (isUserInRoom) {
-            if (isRoomMinimized) {
+        if (roomDetails === null) {
+            setOpenRoom(true, true)
+            createNewRoom(chosenChatDetails.conversationId)
+        } else {
+            if (roomDetails.roomId !== chosenChatDetails.conversationId) {
+                setOpen(true)
+            } else if (isUserInRoom && isRoomMinimized) {
                 toggleWindowResize()
             }
-        } else {
-            setOpenRoom(true, true)
         }
+    }
+
+    const handleLeaveRoom = () => {
+        leaveRoom(roomDetails.roomId)
+        destroyRoom()
     }
 
     return (
         <>
+            <Modal open={open} onClose={() => setOpen(false)} className='messageComposeModal'>
+                <h2>Would you like to leave the current call and make a new call?</h2>
+                <div>
+                    <Button text="Leave" onClick={() => {
+                        handleLeaveRoom()
+                        handleRoomOperations()
+                    }}></Button>
+                    <Button text="Stay" secondary onClick={() => setOpen(false)}></Button>
+                </div>
+            </Modal>
             {files.length > 0 && (
                 <div className='uploadedFilesContainer'>
                     {files.map(({ objectUrl, file }, index) => {
@@ -117,21 +136,21 @@ const MessageCompose = ({ chosenChatDetails, showAlertMessage, setOpenRoom, isRo
                 </div>
             )}
             <div className="messageComposeContainer">
-            <Input
-                autoFocus
-                value={message} 
-                onChange={setMessage} 
-                placeholder={`Write message to ${chosenChatDetails.username}`}
-                handleKeyDown={handleKeyDown} />
-                <Button onClick={handleRoomOperations}>
-                    {isRoomMinimized ? <i className="fa-solid fa-phone-volume"></i> : <i className="fa-solid fa-phone"></i>}
-                </Button>
-                <Button onClick={handleAttachment}>
-                    <i className="fa-solid fa-paperclip"></i>
-                </Button>
-                <Button onClick={handleSendMessage} disabled={!isFormValid} disabledText="Add a message" >
-                    <i className="fa-solid fa-paper-plane"></i>
-                </Button>
+                <Input
+                    autoFocus
+                    value={message}
+                    onChange={setMessage}
+                    placeholder={`Write message to ${chosenChatDetails.username}`}
+                    handleKeyDown={handleKeyDown} />
+                    <Button onClick={handleRoomOperations}>
+                        {roomDetails?.roomId === chosenChatDetails?.conversationId && isRoomMinimized ? <i className="fa-solid fa-phone-volume"></i> : <i className="fa-solid fa-phone"></i>}
+                    </Button>
+                    <Button onClick={handleAttachment}>
+                        <i className="fa-solid fa-paperclip"></i>
+                    </Button>
+                    <Button onClick={handleSendMessage} disabled={!isFormValid} disabledText="Add a message" >
+                        <i className="fa-solid fa-paper-plane"></i>
+                    </Button>
             </div>
         </>
     )

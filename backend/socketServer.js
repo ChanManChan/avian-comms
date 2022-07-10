@@ -3,7 +3,15 @@ const Conversation = require('./models/Conversation')
 const Invitation = require('./models/Invitation')
 const Message = require('./models/Message')
 const User = require('./models/User')
-const { addNewConnectedUser, removeConnectedUser, getActiveConnections, setSocketServerInstance, getSocketServerInstance } = require('./store')
+const {
+    addNewConnectedUser,
+    removeConnectedUser,
+    getActiveConnections,
+    setSocketServerInstance,
+    getSocketServerInstance,
+    addNewActiveRoom,
+    removeUserFromRoom
+} = require('./store')
 
 const registerSocketServer = server => {
     const io = require('socket.io')(server, {
@@ -53,11 +61,41 @@ const registerSocketServer = server => {
             liveMessageHandler(userId, data)
         })
 
+        socket.on('room-create', data => {
+            roomCreateHandler(socket, data)
+        })
+
+        socket.on('leave-room', data => {
+            roomLeaveHandler(socket, data)
+        })
+
         socket.on('disconnect', () => {
             disconnectHandler(socket)
             advertiseAbsence(userId, directChatUsers)
         })
     })
+}
+
+const roomLeaveHandler = (socket, data) => {
+    const roomId = data.roomId
+    const userId = socket.user.userId
+    removeUserFromRoom(userId, roomId)
+}
+
+const roomCreateHandler = async (socket, data) => {
+    const socketId = socket.id
+    const conversationId = data.conversationId
+    const conversation = await Conversation.findById(conversationId).select('participants').catch(e => console.error(e))
+    const participants = conversation.participants
+    const roomDetails = addNewActiveRoom(socket.user, socketId, conversationId)
+
+    notifyRoomParticipants(participants, roomDetails)
+}
+
+const notifyRoomParticipants = (participants, roomDetails) => {
+    const io = getSocketServerInstance()
+    const receiverList = participants.map(participant => getActiveConnections(participant)).flat()
+    receiverList.forEach(socketId => io.to(socketId).emit('room-create', { roomDetails }))
 }
 
 const initialSync = async (userId, pendingInvitations, directChatUsers, userDetails, socket) => {
