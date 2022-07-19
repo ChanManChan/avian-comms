@@ -7,7 +7,7 @@ import ConferenceContainer from "../conferenceContainer/ConferenceContainer"
 import {leaveRoom} from "../../../realtimeCommunication/socketConnection";
 import './Room.css'
 
-const Room = ({ toggleWindowResize, isRoomMinimized, destroyRoom, roomDetails }) => {
+const Room = ({ toggleWindowResize, isRoomMinimized, destroyRoom, currentRoom }) => {
     const [cameraEnabled, setCameraEnabled] = useState(false)
     const [microphoneEnabled, setMicrophoneEnabled] = useState(false)
     const [screenShareEnabled, setScreenShareEnabled] = useState(false)
@@ -25,7 +25,7 @@ const Room = ({ toggleWindowResize, isRoomMinimized, destroyRoom, roomDetails })
     }
 
     const handleLeaveRoom = () => {
-        leaveRoom(roomDetails.roomId)
+        leaveRoom(currentRoom.roomDetails.roomId)
         destroyRoom()
     }
 

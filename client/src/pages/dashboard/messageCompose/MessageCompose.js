@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 
-import { sendMessage, createNewRoom, leaveRoom } from '../../../realtimeCommunication/socketConnection'
+import { sendMessage, createNewRoom, leaveRoom, joinRoom } from '../../../realtimeCommunication/socketConnection'
 import Button from '../../../shared/components/button/Button'
 import Input from "../../../shared/components/input/Input"
 import { getActions } from '../../../store/actions/alert'
@@ -10,7 +10,17 @@ import { imageFormats, videoFormats } from '../../../shared/utils'
 import Modal from "../../../shared/components/modal/Modal";
 import './MessageCompose.css'
 
-const MessageCompose = ({ chosenChatDetails, showAlertMessage, setOpenRoom, destroyRoom, isRoomMinimized, roomDetails, isUserInRoom, toggleWindowResize }) => {
+const MessageCompose = ({
+    chosenChatDetails,
+    showAlertMessage,
+    destroyRoom,
+    isRoomMinimized,
+    currentRoom,
+    activeRooms,
+    isUserInRoom,
+    toggleWindowResize,
+    setCurrentRoom
+}) => {
     const [message, setMessage] = useState('')
     const [files, setFiles] = useState([])
     const [isFormValid, setIsFormValid] = useState(false)
@@ -24,20 +34,20 @@ const MessageCompose = ({ chosenChatDetails, showAlertMessage, setOpenRoom, dest
         setIsFormValid(false)
     }, [message, files])
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         if (isFormValid) {
             const data = { conversationId: chosenChatDetails.conversationId }
             Object.assign(data, message.trim().length > 0 && { content: message.trim() })
             Object.assign(data, files.length > 0 && { media: files.map(x => x.file) })
-            sendMessage(data)
+            await sendMessage(data)
             setMessage('')
             setFiles([])
         }
     }
 
-    const handleKeyDown = event => {
+    const handleKeyDown = async event => {
         if (event.key === "Enter") {
-            handleSendMessage()
+            await handleSendMessage()
         }
     }
 
@@ -87,20 +97,25 @@ const MessageCompose = ({ chosenChatDetails, showAlertMessage, setOpenRoom, dest
     }
 
     const handleRoomOperations = () => {
-        if (roomDetails === null) {
-            setOpenRoom(true, true)
+        if (currentRoom === null) {
+            const existingRoom = activeRooms.find(room => room.roomDetails.roomId === chosenChatDetails.conversationId)
+            if (existingRoom) {
+                setCurrentRoom(existingRoom)
+                joinRoom(existingRoom.roomDetails.roomId)
+                return
+            }
             createNewRoom(chosenChatDetails.conversationId)
         } else {
-            if (roomDetails.roomId !== chosenChatDetails.conversationId) {
+            if (currentRoom.roomDetails.roomId !== chosenChatDetails.conversationId) {
                 setOpen(true)
-            } else if (isUserInRoom && isRoomMinimized) {
+            } else if (currentRoom && isRoomMinimized) {
                 toggleWindowResize()
             }
         }
     }
 
     const handleLeaveRoom = () => {
-        leaveRoom(roomDetails.roomId)
+        leaveRoom(currentRoom.roomDetails.roomId)
         destroyRoom()
     }
 
@@ -143,7 +158,7 @@ const MessageCompose = ({ chosenChatDetails, showAlertMessage, setOpenRoom, dest
                     placeholder={`Write message to ${chosenChatDetails.username}`}
                     handleKeyDown={handleKeyDown} />
                     <Button onClick={handleRoomOperations}>
-                        {roomDetails?.roomId === chosenChatDetails?.conversationId && isRoomMinimized ? <i className="fa-solid fa-phone-volume"></i> : <i className="fa-solid fa-phone"></i>}
+                        {currentRoom?.roomDetails.roomId === chosenChatDetails?.conversationId && isRoomMinimized ? <i className="fa-solid fa-phone-volume"></i> : <i className="fa-solid fa-phone"></i>}
                     </Button>
                     <Button onClick={handleAttachment}>
                         <i className="fa-solid fa-paperclip"></i>

@@ -3,7 +3,7 @@ import io from 'socket.io-client'
 import store from '../store/store'
 import { addInvitation, addConversation, setConversations, setPendingInvitations, updateOnlineStatus } from '../store/actions/communication'
 import { addMessage, CHAT_TYPES } from '../store/actions/chat'
-import { setRoomDetails } from "../store/actions/room";
+import { createRoom } from "../store/actions/room";
 import * as api from '../api'
 
 let socket = null
@@ -64,9 +64,9 @@ export const connectWithSocketServer = user => {
         store.dispatch(addMessage(data, lastMessage))
     })
 
-    socket.on('room-create', data => {
+    socket.on('create-room', data => {
         const userId = store.getState().auth.userDetails._id
-        store.dispatch(setRoomDetails(data, userId))
+        store.dispatch(createRoom(data, userId))
     })
 }
 
@@ -87,9 +87,13 @@ export const sendMessage = async data => {
 }
 
 export const createNewRoom = conversationId => {
-    socket.emit('room-create', { conversationId })
+    socket.emit('create-room', { conversationId })
 }
 
 export const leaveRoom = roomId => {
     socket.emit('leave-room', { roomId })
+}
+
+export const joinRoom = roomId => {
+    socket.emit('join-room', { roomId })
 }

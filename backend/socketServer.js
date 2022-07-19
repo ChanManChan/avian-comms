@@ -61,12 +61,16 @@ const registerSocketServer = server => {
             liveMessageHandler(userId, data)
         })
 
-        socket.on('room-create', data => {
+        socket.on('create-room', data => {
             roomCreateHandler(socket, data)
         })
 
         socket.on('leave-room', data => {
             roomLeaveHandler(socket, data)
+        })
+
+        socket.on('join-room', data => {
+            console.log(data)
         })
 
         socket.on('disconnect', () => {
@@ -95,7 +99,7 @@ const roomCreateHandler = async (socket, data) => {
 const notifyRoomParticipants = (participants, roomDetails) => {
     const io = getSocketServerInstance()
     const receiverList = participants.map(participant => getActiveConnections(participant)).flat()
-    receiverList.forEach(socketId => io.to(socketId).emit('room-create', { roomDetails }))
+    receiverList.forEach(socketId => io.to(socketId).emit('create-room', { roomDetails }))
 }
 
 const initialSync = async (userId, pendingInvitations, directChatUsers, userDetails, socket) => {
